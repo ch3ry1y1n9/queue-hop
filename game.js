@@ -209,6 +209,9 @@ function triggerCatch() {
   G.hearts--;
   G.passed = Math.max(0, G.passed - CONFIG.catchPenalty);
   G.combo = 0;
+  for (let i = 0; i < G.queue.length; i++) {
+    G.queue[i].state = 'angry';
+  }
   beep(300, 0.2);
   setTimeout(function() {
     if (G.hearts <= 0) {
@@ -319,7 +322,7 @@ function update(dt) {
       const m = G.queue[i];
       m.timer -= dt;
       if (m.timer <= 0) {
-        if (m.state === 'away') { m.state = 'alert'; m.timer = m.timer = 0.3; }
+        if (m.state === 'away') { m.state = 'alert'; m.timer = 0.22; }
         else if (m.state === 'alert') { m.state = 'looking'; m.timer = m.lookDur; }
         else {
           m.state = 'away';
