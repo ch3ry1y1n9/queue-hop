@@ -12,7 +12,7 @@ a single-button browser game about jumping the exit A lift queue before your 9:0
 
 you're stuck in the HKU station exit A lift queue at 8:50. class check-in is 9:00 sharp. reach the front before 8:55.
 
-- **desktop** — press `space` to jump
+- **desktop (recommended)** — press `space` to jump
 - **mobile** — tap anywhere to jump
 
 jump over the next person in the queue — but only when they aren't looking. watch for the little red alert doodle above their head: that means they're about to turn around.
