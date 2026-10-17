@@ -319,7 +319,7 @@ function update(dt) {
       const m = G.queue[i];
       m.timer -= dt;
       if (m.timer <= 0) {
-        if (m.state === 'away') { m.state = 'alert'; m.timer = m.alertDur; }
+        if (m.state === 'away') { m.state = 'alert'; m.timer = m.timer = 0.3; }
         else if (m.state === 'alert') { m.state = 'looking'; m.timer = m.lookDur; }
         else {
           m.state = 'away';
