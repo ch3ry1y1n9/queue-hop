@@ -19,7 +19,7 @@ function toLogical(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
   return [
     (clientX - r.left) * 1280 / r.width,
-    (clientY - r.top) * 720 / r.height,
+    (clientY - r.top) * 720 / r.height
   ];
 }
 
@@ -34,25 +34,45 @@ function handleClick(lx, ly) {
     }
     return;
   }
-  for (const b of G.buttons) {
+
+  if (G.paused && G.screen === 'game') {
+    for (let i = 0; i < G.buttons.length; i++) {
+      const b = G.buttons[i];
+      if (lx >= b.x && lx <= b.x + b.w && ly >= b.y && ly <= b.y + b.h) {
+        b.action();
+        return;
+      }
+    }
+    return;
+  }
+
+  for (let i = 0; i < G.buttons.length; i++) {
+    const b = G.buttons[i];
     if (lx >= b.x && lx <= b.x + b.w && ly >= b.y && ly <= b.y + b.h) {
       b.action();
       return;
     }
   }
-  if (G.screen === 'game' && !G.trivia) onJump();
+
+  if (G.screen === 'game' && !G.trivia && !G.paused) onJump();
 }
 
-canvas.addEventListener('pointerdown', (e) => {
+canvas.addEventListener('pointerdown', function(e) {
   e.preventDefault();
   const pos = toLogical(e.clientX, e.clientY);
   handleClick(pos[0], pos[1]);
 });
 
-window.addEventListener('keydown', (e) => {
+window.addEventListener('keydown', function(e) {
   if (e.code === 'Space') {
     e.preventDefault();
-    if (G.screen === 'game' && !G.trivia) onJump();
+    if (G.screen === 'game' && !G.trivia && !G.paused) onJump();
+    else {
+      for (let i = 0; i < G.buttons.length; i++) {
+        const b = G.buttons[i];
+        if (b.action) { b.action(); return; }
+      }
+    }
   }
 });
 
@@ -74,7 +94,9 @@ loadSound();
 resize();
 
 if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => { requestAnimationFrame(loop); });
+  document.fonts.ready.then(function() {
+    requestAnimationFrame(loop);
+  });
 } else {
   requestAnimationFrame(loop);
 }
