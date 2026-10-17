@@ -200,12 +200,9 @@ function renderGame(ctx) {
     SK.text(ctx, 'sorry!', bx + 20, by - 20, 22);
   }
 
-  // combo doodle
-  if (G.combo > 0 && G.combo < CONFIG.comboStep) {
-    for (let i = 0; i < CONFIG.comboStep; i++) {
-      const filled = i < G.combo;
-      SK.dot(ctx, 250 + i * 16, 520, 4, filled ? SK.gold : SK.grey);
-    }
+  // combo label
+  if (G.combo >= 2) {
+    SK.text(ctx, `${G.combo}/5`, CONFIG.playerX, CONFIG.groundY - 110, 20, SK.gold);
   }
 
   // trivia modal
