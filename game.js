@@ -19,6 +19,7 @@ const G = {
   staffTimer: 0,
   staffPhase: 0,
   tutorialPage: 0,
+  tutorialReturn: null,
   trivia: null,
   usedQuestions: [],
   buttons: [],
@@ -138,6 +139,7 @@ function startGame(mode) {
   G.winTime = '';
   G.failReason = '';
   G.paused = false;
+  G.tutorialReturn = null;
 }
 
 function fmtClock(seconds) {
@@ -184,6 +186,8 @@ function onJump() {
   G.passed++;
   G.successAdvances++;
   G.combo++;
+  target.hasStar = false;
+  target.state = 'away';
   G.passedQueue.push(target);
   G.queue.shift();
   G.queue.push(makeMember(G.mode, G.passed / G.total));
@@ -232,7 +236,7 @@ function openTrivia() {
     options[i] = options[j];
     options[j] = tmp;
   }
-  G.trivia = { question: q.q, options: options, result: null, resultTimer: 0, chosen: -1, optionRects: [] };
+  G.trivia = { question: q.q, options: options, result: null, resultTimer: 0, chosen: -1, optionRects: [], skipAmount: 0 };
 }
 
 function answerTrivia(i) {
@@ -240,16 +244,17 @@ function answerTrivia(i) {
   const opt = G.trivia.options[i];
   G.trivia.chosen = i;
   G.trivia.result = opt.isCorrect ? 'correct' : 'wrong';
-  G.trivia.resultTimer = 0.7;
+  G.trivia.resultTimer = 1.2;
+  G.trivia.skipAmount = opt.isCorrect ? randInt(CONFIG.starSkipMin, CONFIG.starSkipMax) : 0;
   if (opt.isCorrect) beep(880, 0.2);
   else beep(220, 0.2);
 }
 
 function resolveTrivia() {
   const wasCorrect = G.trivia.result === 'correct';
+  const skip = G.trivia.skipAmount || 0;
   G.trivia = null;
   if (wasCorrect) {
-    const skip = randInt(CONFIG.starSkipMin, CONFIG.starSkipMax);
     G.passed += skip;
     G.queue = makeQueue(6, G.mode, G.passed / G.total);
     maybeSpawnStar();
