@@ -155,27 +155,19 @@ const CH = {
     }
 
     if (member.type === 'distracted') {
-      // body
       SK.line(ctx, x, y - 44, x - 10, y);
       SK.line(ctx, x, y - 44, x + 10, y);
       SK.line(ctx, x, y - 44, x, y - 90);
-      // arm reaching forward to hold phone
       SK.line(ctx, x, y - 78, x + 14, y - 70);
       SK.line(ctx, x + 14, y - 70, x + 22, y - 62);
-      // other arm down
       SK.line(ctx, x, y - 80, x - 14, y - 60);
-      // head tilted down
       SK.circle(ctx, x, headY + 6, headR);
-      // hair strokes on top
       SK.line(ctx, x - 10, headY - 4, x - 4, headY - 12, SK.ink, 2);
       SK.line(ctx, x + 2, headY - 6, x + 8, headY - 12, SK.ink, 2);
-      // phone — small rounded rectangle in the hand
       SK.rect(ctx, x + 18, y - 80, 18, 26, SK.ink, 2.5);
-      // screen content lines
       SK.line(ctx, x + 21, y - 74, x + 33, y - 74, SK.ink, 1.5, 0);
       SK.line(ctx, x + 21, y - 68, x + 33, y - 68, SK.ink, 1.5, 0);
       SK.line(ctx, x + 21, y - 62, x + 28, y - 62, SK.ink, 1.5, 0);
-      // blue glow radiating from phone screen
       SK.line(ctx, x + 38, y - 74, x + 46, y - 78, SK.blue, 2.5, 0.4);
       SK.line(ctx, x + 38, y - 66, x + 48, y - 66, SK.blue, 2.5, 0.4);
       SK.line(ctx, x + 38, y - 58, x + 46, y - 54, SK.blue, 2.5, 0.4);
@@ -201,13 +193,14 @@ const CH = {
       }
     }
 
-    if (member.type === 'dozing') {
+    // zzz and paper only show when NOT looking
+    if (!isLooking && member.type === 'dozing') {
       SK.text(ctx, 'z', x + 24, headY - 18, 22);
       SK.text(ctx, 'z', x + 38, headY - 34, 28);
       SK.text(ctx, 'z', x + 54, headY - 52, 34);
     }
 
-    if (member.type === 'normal' && !isLooking) {
+    if (!isLooking && member.type === 'normal') {
       SK.rect(ctx, x + 14, y - 68, 10, 14, SK.ink, 2);
     }
 
