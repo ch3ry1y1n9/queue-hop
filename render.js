@@ -315,12 +315,14 @@ function renderPause(ctx) {
   ctx.fillStyle = 'rgba(255,255,255,0.96)';
   ctx.fillRect(0, 0, 1280, 720);
 
-  SK.text(ctx, 'paused', 640, 250, 44);
+  SK.text(ctx, 'paused', 640, 250, 44, SK.red);
 
   SK.text(ctx, 'resume', 640, 340, 34, SK.ink);
+  SK.line(ctx, 590, 360, 690, 360, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 310, w: 300, h: 60, action: function() { G.paused = false; } });
 
   SK.text(ctx, 'how to play', 640, 410, 34, SK.ink);
+  SK.line(ctx, 555, 430, 725, 430, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 380, w: 300, h: 60, action: function() {
     G.paused = false;
     G.screen = 'tutorial';
@@ -329,6 +331,7 @@ function renderPause(ctx) {
   }});
 
   SK.text(ctx, 'end and go to landing page', 640, 480, 28, SK.ink);
+  SK.line(ctx, 480, 498, 800, 498, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() {
     G.paused = false;
     G.screen = 'title';
