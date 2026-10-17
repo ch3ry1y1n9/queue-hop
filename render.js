@@ -359,7 +359,7 @@ function renderSuccess(ctx) {
 /* ---------------- FAIL ---------------- */
 
 function renderFail(ctx) {
-  let icon = 'staff', headline = 'caught by station staff. start over.';
+  let icon = 'staff', headline = 'caught by station staff...';
   if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught...'; }
   if (G.failReason === 'clock') { icon = 'clock'; headline = 'leave home earlier next time.'; }
 
