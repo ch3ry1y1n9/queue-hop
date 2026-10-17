@@ -246,11 +246,12 @@ function renderGame(ctx) {
 /* ---------------- TRIVIA ---------------- */
 
 function renderTrivia(ctx) {
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, 1280, 720);
-
+  // HUD stays visible: draw a white band only in the middle
   const w = 960, h = 540;
   const x = (1280 - w) / 2, y = (720 - h) / 2;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x, y, w, h);
+
   SK.rect(ctx, x, y, w, h, SK.ink, 3);
   SK.star(ctx, x + w / 2, y + 50, 26);
   SK.text(ctx, G.trivia.question, x + w / 2, y + 120, 26);
@@ -280,32 +281,6 @@ function renderTrivia(ctx) {
     }
   } else {
     SK.text(ctx, 'tap the answer', x + w / 2, y + h - 40, 20);
-  }
-}
-
-function wrapText(ctx, text, cx, cy, maxW, size, color, align) {
-  ctx.font = size + 'px "Gaegu", "Patrick Hand", cursive';
-  ctx.fillStyle = color;
-  ctx.textAlign = align || 'center';
-  ctx.textBaseline = 'middle';
-  const words = String(text).split(' ');
-  const lines = [];
-  let line = '';
-  for (let i = 0; i < words.length; i++) {
-    const test = line ? line + ' ' + words[i] : words[i];
-    if (ctx.measureText(test).width > maxW && line) {
-      lines.push(line);
-      line = words[i];
-    } else {
-      line = test;
-    }
-  }
-  if (line) lines.push(line);
-  const lineH = size + 4;
-  const totalH = lines.length * lineH;
-  const startY = cy - totalH / 2 + lineH / 2;
-  for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i], cx, startY + i * lineH);
   }
 }
 
