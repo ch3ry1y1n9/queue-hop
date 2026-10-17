@@ -10,7 +10,7 @@ a white-background, hand-drawn sketch-style, single-button browser game about ju
 
 ## how to play
 
-you're stuck in the exit a lift queue at 8:50. class check-in is 9:00 sharp. reach the front before 8:55.
+you're stuck in the HKU station exit A lift queue at 8:50. class check-in is 9:00 sharp. reach the front before 8:55.
 
 - **desktop** — press `space` to jump
 - **mobile** — tap anywhere to jump
