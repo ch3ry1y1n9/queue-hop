@@ -382,7 +382,6 @@ function renderFail(ctx) {
 
     SK.alert(ctx, 460, 240);
 
-    SK.rect(ctx, 510, 230, 260, 70, SK.ink, 3);
     SK.text(ctx, "don't jump the queue!", 640, 265, 24, SK.ink);
 
     SK.line(ctx, 870, 260, 890, 270, SK.ink, 2, 0.5);
