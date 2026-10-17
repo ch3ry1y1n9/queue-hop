@@ -28,6 +28,7 @@ const G = {
   soundOn: true,
   soundCtx: null,
   titleEnterTime: 0,
+  paused: false,
 };
 
 function rand(a, b) { return a + Math.random() * (b - a); }
@@ -36,7 +37,8 @@ function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
 function loadBest() {
   try {
     const b = JSON.parse(localStorage.getItem('queuehop_best') || '{}');
-    G.best.easy = b.easy || 0; G.best.hard = b.hard || 0;
+    G.best.easy = b.easy || 0;
+    G.best.hard = b.hard || 0;
   } catch (e) {}
 }
 function saveBest() {
@@ -68,10 +70,13 @@ function makeMember(mode, progress) {
   const dist = typeDistribution(mode, progress);
   let r = Math.random();
   let type = 'normal';
-  for (const [t, p] of dist) { r -= p; if (r <= 0) { type = t; break; } }
+  for (const entry of dist) {
+    r -= entry[1];
+    if (r <= 0) { type = entry[0]; break; }
+  }
   const cfg = CONFIG.queueTypes[type];
   return {
-    type,
+    type: type,
     state: 'away',
     awayDur: rand(cfg.away[0], cfg.away[1]),
     alertDur: cfg.alert,
@@ -85,17 +90,19 @@ function typeDistribution(mode, progress) {
   const p = Math.min(1, Math.max(0, progress));
   const tables = {
     easy: {
-      early: { dozing: .55, distracted: .3, normal: .15, paranoid: 0 },
-      late:  { dozing: .25, distracted: .4, normal: .25, paranoid: .1 },
+      early: { dozing: .55, distracted: .3, normal: .15 },
+      late:  { dozing: .25, distracted: .4, normal: .35 },
     },
     hard: {
-      early: { dozing: .35, distracted: .3, normal: .2, paranoid: .15 },
-      late:  { dozing: .1, distracted: .3, normal: .2, paranoid: .4 },
+      early: { dozing: .35, distracted: .3, normal: .35 },
+      late:  { dozing: .1, distracted: .3, normal: .6 },
     },
   };
   const t = tables[mode];
   const out = [];
-  for (const k in t.early) out.push([k, t.early[k] * (1 - p) + t.late[k] * p]);
+  for (const k in t.early) {
+    out.push([k, t.early[k] * (1 - p) + t.late[k] * p]);
+  }
   return out;
 }
 
@@ -130,6 +137,7 @@ function startGame(mode) {
   G.screen = 'briefing';
   G.winTime = '';
   G.failReason = '';
+  G.paused = false;
 }
 
 function fmtClock(seconds) {
@@ -151,6 +159,7 @@ function maybeSpawnStar() {
 
 function onJump() {
   if (G.screen !== 'game') return;
+  if (G.paused) return;
   if (G.trivia) return;
   if (G.frozen) return;
   if (G.jumpTimer > 0) return;
@@ -195,7 +204,10 @@ function triggerCatch() {
   beep(300, 0.2);
   setTimeout(() => {
     if (G.hearts <= 0) {
-      G.failReason = 'hearts'; G.screen = 'fail'; G.frozen = false; return;
+      G.failReason = 'hearts';
+      G.screen = 'fail';
+      G.frozen = false;
+      return;
     }
     G.queue = makeQueue(6, G.mode, G.passed / G.total);
     G.passedQueue = [];
@@ -212,12 +224,16 @@ function openTrivia() {
   while (G.usedQuestions.includes(idx));
   G.usedQuestions.push(idx);
   const q = TRIVIA[idx];
-  const options = q.opts.map((label, i) => ({ label, isCorrect: i === q.a }));
+  const options = q.opts.map(function(label, i) {
+    return { label: label, isCorrect: i === q.a };
+  });
   for (let i = options.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [options[i], options[j]] = [options[j], options[i]];
+    const tmp = options[i];
+    options[i] = options[j];
+    options[j] = tmp;
   }
-  G.trivia = { question: q.q, options, result: null, resultTimer: 0, chosen: -1, optionRects: [] };
+  G.trivia = { question: q.q, options: options, result: null, resultTimer: 0, chosen: -1, optionRects: [] };
 }
 
 function answerTrivia(i) {
@@ -226,7 +242,8 @@ function answerTrivia(i) {
   G.trivia.chosen = i;
   G.trivia.result = opt.isCorrect ? 'correct' : 'wrong';
   G.trivia.resultTimer = 0.7;
-  if (opt.isCorrect) beep(880, 0.2); else beep(220, 0.2);
+  if (opt.isCorrect) beep(880, 0.2);
+  else beep(220, 0.2);
 }
 
 function resolveTrivia() {
@@ -244,15 +261,19 @@ function resolveTrivia() {
 function checkWin() {
   if (G.passed >= G.total) {
     G.winTime = currentClockString();
-    if (G.passed > G.best[G.mode]) { G.best[G.mode] = G.passed; saveBest(); }
+    if (G.passed > G.best[G.mode]) {
+      G.best[G.mode] = G.passed;
+      saveBest();
+    }
     G.screen = 'success';
     beep(660, 0.2);
-    setTimeout(() => beep(880, 0.3), 150);
+    setTimeout(function() { beep(880, 0.3); }, 150);
   }
 }
 
 function update(dt) {
   if (G.screen !== 'game') return;
+  if (G.paused) return;
 
   if (G.trivia) {
     if (G.trivia.result) {
@@ -276,16 +297,22 @@ function update(dt) {
 
   G.clockElapsed += dt;
   if (currentClockSeconds() >= CONFIG.clockDeadline) {
-    G.failReason = 'clock'; G.screen = 'fail'; return;
+    G.failReason = 'clock';
+    G.screen = 'fail';
+    return;
   }
 
   if (G.staffState !== 'walking') {
-    for (const m of G.queue) {
+    for (let i = 0; i < G.queue.length; i++) {
+      const m = G.queue[i];
       m.timer -= dt;
       if (m.timer <= 0) {
         if (m.state === 'away') { m.state = 'alert'; m.timer = m.alertDur; }
         else if (m.state === 'alert') { m.state = 'looking'; m.timer = m.lookDur; }
-        else { m.state = 'away'; m.timer = rand(CONFIG.queueTypes[m.type].away[0], CONFIG.queueTypes[m.type].away[1]); }
+        else {
+          m.state = 'away';
+          m.timer = rand(CONFIG.queueTypes[m.type].away[0], CONFIG.queueTypes[m.type].away[1]);
+        }
       }
     }
   }
@@ -300,7 +327,8 @@ function update(dt) {
     G.staffTimer -= dt;
     G.staffPhase = 1 - (G.staffTimer / CONFIG.staffWalkLen);
     if (G.staffTimer <= 0) {
-      G.staffState = 'idle'; G.staffPhase = 0;
+      G.staffState = 'idle';
+      G.staffPhase = 0;
       const range = CONFIG.modes[G.mode].staffInterval;
       G.staffTimer = rand(range[0], range[1]);
     }
@@ -310,7 +338,7 @@ function update(dt) {
 function requestFullscreen() {
   const el = document.documentElement;
   try {
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    if (el.requestFullscreen) el.requestFullscreen().catch(function() {});
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   } catch (e) {}
 }
