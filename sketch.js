@@ -2,7 +2,6 @@ const SK = {
   ink: '#2b2b2b', red: '#c97b6b', blue: '#7fa6bf',
   gold: '#d9b26a', grey: '#bdb8af', paper: '#ffffff',
 
-  // deterministic bounded jitter — cannot NaN, cannot escape bounds
   _j(i, seed, amt) {
     let n = (i * 73 + seed * 179 + 31) | 0;
     n = (n ^ (n << 13)) | 0;
@@ -13,13 +12,8 @@ const SK = {
   },
 
   line(ctx, x1, y1, x2, y2, c, w, j) {
-    c = c || SK.ink;
-    w = w || 3;
-    j = (j === undefined) ? 1 : j;
-    ctx.strokeStyle = c;
-    ctx.lineWidth = w;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    c = c || SK.ink; w = w || 3; j = (j === undefined) ? 1 : j;
+    ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath();
     const seed = ((x1 * 7 + y1 * 13 + x2 * 17 + y2 * 19) | 0);
     const steps = 5;
@@ -27,90 +21,67 @@ const SK = {
       const t = i / steps;
       const px = x1 + (x2 - x1) * t + ((i > 0 && i < steps) ? SK._j(i, seed, j * 2) : 0);
       const py = y1 + (y2 - y1) * t + ((i > 0 && i < steps) ? SK._j(i + 100, seed, j * 2) : 0);
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
     ctx.stroke();
   },
 
   rect(ctx, x, y, w, h, c, lw, j) {
-    lw = lw || 3;
-    j = (j === undefined) ? 1.5 : j;
-    SK.line(ctx, x, y, x + w, y, c, lw, j);
-    SK.line(ctx, x + w, y, x + w, y + h, c, lw, j);
-    SK.line(ctx, x + w, y + h, x, y + h, c, lw, j);
-    SK.line(ctx, x, y + h, x, y, c, lw, j);
-  },
-
-  circle(ctx, cx, cy, r, c, lw, j) {
-    c = c || SK.ink;
-    lw = lw || 3;
-    j = (j === undefined) ? 1 : j;
-    ctx.strokeStyle = c;
-    ctx.lineWidth = lw;
-    ctx.lineCap = 'round';
+    c = c || SK.ink; lw = lw || 3; j = (j === undefined) ? 1.5 : j;
+    ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const jf = (s) => SK._j(s, ((x + y) | 0), j);
     ctx.beginPath();
-    const seed = ((cx * 7 + cy * 13 + r * 19) | 0);
-    const steps = 20;
-    for (let i = 0; i <= steps; i++) {
-      const a = (i / steps) * Math.PI * 2;
-      const rr = r + ((i > 0 && i < steps) ? SK._j(i, seed, j * 2) : 0);
-      const px = cx + Math.cos(a) * rr;
-      const py = cy + Math.sin(a) * rr;
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
-    }
+    ctx.moveTo(x + jf(1), y + jf(2));
+    ctx.lineTo(x + w + jf(3), y + jf(4));
+    ctx.lineTo(x + w + jf(5), y + h + jf(6));
+    ctx.lineTo(x + jf(7), y + h + jf(8));
     ctx.closePath();
     ctx.stroke();
   },
 
+  circle(ctx, cx, cy, r, c, lw) {
+    c = c || SK.ink; lw = lw || 3;
+    ctx.strokeStyle = c; ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r * 1.03, r * 0.97, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  },
+
   text(ctx, txt, x, y, s, c, align) {
-    s = s || 28;
-    c = c || SK.ink;
-    align = align || 'center';
+    s = s || 28; c = c || SK.ink; align = align || 'center';
     ctx.font = s + 'px "Gaegu", "Patrick Hand", cursive';
-    ctx.fillStyle = c;
-    ctx.textAlign = align;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(String(txt).toLowerCase(), x, y);
+    ctx.fillStyle = c; ctx.textAlign = align; ctx.textBaseline = 'middle';
+    ctx.fillText(String(txt), x, y);
   },
 
   dot(ctx, x, y, r, c) {
     c = c || SK.ink;
     ctx.fillStyle = c;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   },
 
   alert(ctx, x, y) {
-    SK.line(ctx, x, y - 10, x, y + 2, SK.red, 3, 0.4);
-    SK.dot(ctx, x, y + 8, 2.2, SK.red);
+    SK.line(ctx, x, y - 14, x, y + 2, SK.red, 3.5, 0.4);
+    SK.dot(ctx, x, y + 12, 3, SK.red);
   },
 
   star(ctx, x, y, size) {
-    size = size || 18;
-    ctx.strokeStyle = SK.gold;
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
+    size = size || 20;
+    ctx.strokeStyle = SK.gold; ctx.lineWidth = 3; ctx.lineCap = 'round';
     ctx.beginPath();
     for (let i = 0; i < 10; i++) {
       const r = (i % 2 === 0) ? size : size * 0.45;
       const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
-      const px = x + Math.cos(a) * r;
-      const py = y + Math.sin(a) * r;
-      if (i === 0) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
+      const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
-    ctx.closePath();
-    ctx.stroke();
+    ctx.closePath(); ctx.stroke();
   },
 
   heart(ctx, x, y, size, hollow) {
-    size = size || 18;
+    size = size || 20;
     ctx.strokeStyle = hollow ? SK.grey : SK.red;
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
+    ctx.lineWidth = 3; ctx.lineCap = 'round';
     const s = size / 18;
     ctx.beginPath();
     ctx.moveTo(x, y + 8 * s);
@@ -123,76 +94,113 @@ const SK = {
 const CH = {
   player(ctx, x, y, state) {
     state = state || 'idle';
-    const headY = y - 90;
+    const headR = 24;
+    const headY = y - 120;
     if (state === 'jump') {
-      SK.line(ctx, x, y - 30, x - 12, y - 12);
-      SK.line(ctx, x, y - 30, x + 12, y - 12);
+      SK.line(ctx, x, y - 50, x - 14, y - 10);
+      SK.line(ctx, x, y - 50, x + 14, y - 10);
     } else {
-      SK.line(ctx, x, y - 30, x - 10, y);
-      SK.line(ctx, x, y - 30, x + 10, y);
+      SK.line(ctx, x, y - 50, x - 12, y);
+      SK.line(ctx, x, y - 50, x + 12, y);
     }
-    SK.line(ctx, x, y - 30, x, y - 70);
-    SK.line(ctx, x, y - 60, x - 14, y - 45);
-    SK.line(ctx, x, y - 60, x + 14, y - 45);
-    SK.circle(ctx, x, headY, 18);
-    SK.line(ctx, x - 12, headY - 12, x - 6, headY - 22, SK.ink, 2, 0.5);
-    SK.line(ctx, x - 4, headY - 18, x + 2, headY - 24, SK.ink, 2, 0.5);
-    SK.line(ctx, x + 6, headY - 14, x + 10, headY - 22, SK.ink, 2, 0.5);
-    SK.rect(ctx, x - 30, y - 70, 12, 24, SK.ink, 2, 0.5);
+    SK.line(ctx, x, y - 50, x, y - 95);
+    SK.line(ctx, x, y - 85, x - 20, y - 60);
+    SK.line(ctx, x, y - 85, x + 20, y - 60);
+    SK.circle(ctx, x, headY, headR);
+    SK.line(ctx, x - 18, headY - 16, x - 10, headY - 30, SK.ink, 2.5);
+    SK.line(ctx, x - 6, headY - 24, x + 2, headY - 32, SK.ink, 2.5);
+    SK.line(ctx, x + 8, headY - 20, x + 14, headY - 30, SK.ink, 2.5);
+    SK.rect(ctx, x - 34, y - 92, 16, 34, SK.ink, 2.5);
+    SK.line(ctx, x - 18, y - 88, x + 4, y - 92, SK.ink, 2, 0.4);
     if (state === 'blush') {
-      SK.line(ctx, x - 8, headY - 2, x - 2, headY - 2, SK.ink, 2, 0);
-      SK.line(ctx, x + 2, headY - 2, x + 8, headY - 2, SK.ink, 2, 0);
-      SK.dot(ctx, x - 10, headY + 6, 3, SK.red);
-      SK.dot(ctx, x + 10, headY + 6, 3, SK.red);
+      SK.dot(ctx, x - 12, headY + 6, 4, SK.red);
+      SK.dot(ctx, x + 12, headY + 6, 4, SK.red);
+      SK.dot(ctx, x + 4, headY - 2, 2.5);
+      SK.dot(ctx, x + 11, headY - 2, 2.5);
     } else {
-      SK.dot(ctx, x + 3, headY - 2, 2.2);
-      SK.dot(ctx, x + 9, headY - 2, 2.2);
+      SK.dot(ctx, x + 4, headY - 2, 2.5);
+      SK.dot(ctx, x + 11, headY - 2, 2.5);
     }
   },
 
   person(ctx, x, y, member) {
-    const headY = y - 80;
+    const headR = 20;
+    const headY = y - 108;
     const isLooking = member.state === 'looking';
-    SK.line(ctx, x, y - 28, x - 8, y);
-    SK.line(ctx, x, y - 28, x + 8, y);
-    SK.line(ctx, x, y - 28, x, y - 64);
-    SK.line(ctx, x, y - 56, x - 12, y - 40);
-    SK.line(ctx, x, y - 56, x + 12, y - 40);
-    SK.circle(ctx, x, headY, 15);
+
+    if (member.type === 'staff') {
+      SK.line(ctx, x, y - 44, x - 10, y);
+      SK.line(ctx, x, y - 44, x + 10, y);
+      SK.line(ctx, x, y - 44, x, y - 90);
+      SK.line(ctx, x, y - 82, x - 22, y - 105);
+      SK.line(ctx, x, y - 82, x + 22, y - 95);
+      SK.circle(ctx, x, headY, headR);
+      SK.line(ctx, x - 14, headY - 12, x - 8, headY - 22, SK.ink, 2);
+      SK.line(ctx, x + 2, headY - 18, x + 8, headY - 22, SK.ink, 2);
+      ctx.fillStyle = '#b8e63c';
+      ctx.beginPath();
+      ctx.moveTo(x - 20, y - 90);
+      ctx.lineTo(x + 20, y - 90);
+      ctx.lineTo(x + 18, y - 44);
+      ctx.lineTo(x - 18, y - 44);
+      ctx.closePath();
+      ctx.fill();
+      SK.rect(ctx, x - 20, y - 90, 40, 46, '#4a7a00', 2.5);
+      SK.line(ctx, x - 18, y - 74, x + 18, y - 74, '#ffffff', 3, 0);
+      SK.line(ctx, x - 18, y - 60, x + 18, y - 60, '#ffffff', 3, 0);
+      SK.line(ctx, x - 6, y - 90, x, y - 70, SK.ink, 2);
+      SK.line(ctx, x + 6, y - 90, x, y - 70, SK.ink, 2);
+      SK.rect(ctx, x - 5, y - 68, 10, 12, SK.ink, 1.5);
+      return;
+    }
+
+    SK.line(ctx, x, y - 44, x - 10, y);
+    SK.line(ctx, x, y - 44, x + 10, y);
+    SK.line(ctx, x, y - 44, x, y - 90);
+    SK.line(ctx, x, y - 80, x - 14, y - 60);
+    SK.line(ctx, x, y - 80, x + 14, y - 60);
+    SK.circle(ctx, x, headY, headR);
 
     if (isLooking) {
-      SK.circle(ctx, x + 5, headY - 2, 6, SK.ink, 2, 0.5);
-      SK.dot(ctx, x + 5, headY - 2, 2);
-      SK.line(ctx, x - 10, headY - 2, x - 4, headY - 2, SK.ink, 2, 0);
+      SK.circle(ctx, x - 6, headY - 3, 5, SK.ink, 2);
+      SK.dot(ctx, x - 6, headY - 3, 2);
+      SK.circle(ctx, x + 8, headY - 3, 5, SK.ink, 2);
+      SK.dot(ctx, x + 8, headY - 3, 2);
+      SK.line(ctx, x - 12, headY - 12, x, headY - 12, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 2, headY - 12, x + 14, headY - 12, SK.ink, 1.5, 0);
     } else {
-      SK.line(ctx, x - 8, headY - 8, x - 4, headY - 14, SK.ink, 2, 0.4);
-      SK.line(ctx, x, headY - 8, x + 4, headY - 14, SK.ink, 2, 0.4);
-      SK.line(ctx, x + 6, headY - 8, x + 8, headY - 14, SK.ink, 2, 0.4);
+      SK.line(ctx, x - 10, headY - 10, x - 4, headY - 20, SK.ink, 2);
+      SK.line(ctx, x, headY - 10, x + 6, headY - 20, SK.ink, 2);
+      SK.line(ctx, x + 10, headY - 10, x + 14, headY - 20, SK.ink, 2);
     }
 
     if (member.type === 'dozing') {
-      SK.text(ctx, 'z', x + 18, headY - 20, 14);
-      SK.text(ctx, 'z', x + 26, headY - 30, 18);
-      SK.text(ctx, 'z', x + 36, headY - 42, 22);
-    }
-    if (member.type === 'distracted') {
-      SK.rect(ctx, x - 4, y - 52, 8, 12, SK.ink, 2, 0.5);
-      SK.line(ctx, x - 12, y - 48, x - 6, y - 48, SK.blue, 2, 0.5);
-      SK.line(ctx, x + 12, y - 48, x + 6, y - 48, SK.blue, 2, 0.5);
-      SK.line(ctx, x - 3, y - 44, x - 8, y - 42, SK.blue, 2, 0.5);
-    }
-    if (member.type === 'paranoid') {
-      SK.line(ctx, x - 22, headY - 4, x - 16, headY - 4, SK.ink, 1.5, 0);
-      SK.line(ctx, x + 16, headY - 4, x + 22, headY - 4, SK.ink, 1.5, 0);
-    }
-    if (member.type === 'normal' && !isLooking) {
-      SK.rect(ctx, x + 12, y - 52, 6, 10, SK.ink, 2, 0.5);
+      SK.text(ctx, 'z', x + 22, headY - 20, 16);
+      SK.text(ctx, 'z', x + 32, headY - 32, 20);
+      SK.text(ctx, 'z', x + 44, headY - 46, 24);
     }
 
-    if (member.state === 'alert') SK.alert(ctx, x, headY - 32);
+    if (member.type === 'distracted') {
+      SK.line(ctx, x, y - 80, x + 6, y - 100, SK.ink, 2.5);
+      SK.line(ctx, x + 6, y - 100, x + 18, y - 100, SK.ink, 2.5);
+      SK.rect(ctx, x + 12, y - 128, 22, 34, SK.ink, 2.5);
+      SK.line(ctx, x + 15, y - 122, x + 31, y - 122, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 15, y - 116, x + 31, y - 116, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 15, y - 110, x + 26, y - 110, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 34, y - 116, x + 42, y - 120, SK.blue, 2.5, 0.4);
+      SK.line(ctx, x + 34, y - 108, x + 44, y - 108, SK.blue, 2.5, 0.4);
+      SK.line(ctx, x + 34, y - 100, x + 42, y - 96, SK.blue, 2.5, 0.4);
+      SK.circle(ctx, x, headY + 4, headR, SK.ink, 3);
+    }
+
+    if (member.type === 'normal' && !isLooking) {
+      SK.rect(ctx, x + 14, y - 68, 10, 14, SK.ink, 2);
+    }
+
+    if (member.state === 'alert') SK.alert(ctx, x, headY - 42);
     if (member.hasStar) {
       const bob = Math.sin(performance.now() / 400) * 4;
-      SK.star(ctx, x, headY - 50 + bob, 16);
+      SK.star(ctx, x, headY - 60 + bob, 18);
     }
   },
 };
