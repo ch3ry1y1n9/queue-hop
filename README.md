@@ -42,7 +42,7 @@ you have **3 hearts**. lose all three and it's game over. if the clock hits 8:55
 
 ## disclaimer
 
-this game is fictional. please queue properly in real life.
+THIS GAME IS FICTIONAL. PLEASE QUEUE PROPERLY IN REAL LIFE.
 
 ---
 
