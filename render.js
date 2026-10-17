@@ -122,7 +122,7 @@ function renderTutorial(ctx) {
   } else {
     const rows = [
       { icon: 'alert', label: 'alert doodle above head = they will turn around soon' },
-      { icon: 'star', label: 'star box = answer an hku question, skip ahead 3 postions' },
+      { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
       { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
       { icon: 'hearts', label: "three hearts. lose all three and it's over." },
       { icon: 'clock', label: 'reach the front before 8:55' }
@@ -200,14 +200,7 @@ function renderGame(ctx) {
   }
   CH.player(ctx, px, py, G.playerState);
 
-  SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
-
-  SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
-
-  for (let i = 0; i < CONFIG.hearts; i++) {
-    SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
-  }
-
+  // pause button — drawn before trivia so its hit area doesn't block trivia options
   SK.rect(ctx, 1200, 110, 60, 60, SK.ink, 2.5);
   SK.line(ctx, 1218, 120, 1218, 160, SK.ink, 4);
   SK.line(ctx, 1242, 120, 1242, 160, SK.ink, 4);
@@ -238,7 +231,15 @@ function renderGame(ctx) {
     SK.text(ctx, '+' + G.advanceMessageAmount + ' positions', 640, 210, 34, '#4a7a00');
   }
 
+  // trivia overlay drawn here, before HUD, so HUD appears on top
   if (G.trivia) renderTrivia(ctx);
+
+  // HUD drawn AFTER trivia so timer / hearts / position stay visible
+  SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
+  SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
+  for (let i = 0; i < CONFIG.hearts; i++) {
+    SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
+  }
 
   if (G.paused && !G.trivia) renderPause(ctx);
 }
@@ -246,9 +247,9 @@ function renderGame(ctx) {
 /* ---------------- TRIVIA ---------------- */
 
 function renderTrivia(ctx) {
-  // HUD stays visible: draw a white band only in the middle
   const w = 960, h = 540;
   const x = (1280 - w) / 2, y = (720 - h) / 2;
+  // only cover the modal area — HUD stays visible above
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(x, y, w, h);
 
@@ -281,6 +282,32 @@ function renderTrivia(ctx) {
     }
   } else {
     SK.text(ctx, 'tap the answer', x + w / 2, y + h - 40, 20);
+  }
+}
+
+function wrapText(ctx, text, cx, cy, maxW, size, color, align) {
+  ctx.font = size + 'px "Gaegu", "Patrick Hand", cursive';
+  ctx.fillStyle = color;
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+  const words = String(text).split(' ');
+  const lines = [];
+  let line = '';
+  for (let i = 0; i < words.length; i++) {
+    const test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = words[i];
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  const lineH = size + 4;
+  const totalH = lines.length * lineH;
+  const startY = cy - totalH / 2 + lineH / 2;
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i], cx, startY + i * lineH);
   }
 }
 
@@ -347,29 +374,22 @@ function renderFail(ctx) {
     SK.line(ctx, 640, 180, 670, 180, SK.ink, 3);
   }
 
-  // staff fail — scolding scene
   if (icon === 'staff') {
-    // ground line
     SK.line(ctx, 0, 380, 1280, 380, SK.ink, 2, 0.8);
 
-    // staff on the left, facing right, arm raised (already drawn by person with staff type)
     CH.person(ctx, 460, 380, { state: 'away', type: 'staff' });
 
-    // player on the right, facing left — use blush state and mirror it
     ctx.save();
     ctx.translate(820, 380);
     ctx.scale(-1, 1);
     CH.player(ctx, 0, 0, 'blush');
     ctx.restore();
 
-    // exclamation mark above staff (shouting)
     SK.alert(ctx, 460, 240);
 
-    // wobbly speech bubble from staff toward player
     SK.rect(ctx, 510, 230, 260, 70, SK.ink, 3);
     SK.text(ctx, "don't jump the queue!", 640, 265, 24, SK.ink);
 
-    // head-shaking motion lines near player
     SK.line(ctx, 870, 260, 890, 270, SK.ink, 2, 0.5);
     SK.line(ctx, 870, 280, 890, 290, SK.ink, 2, 0.5);
     SK.line(ctx, 870, 300, 890, 310, SK.ink, 2, 0.5);
@@ -381,11 +401,12 @@ function renderFail(ctx) {
   const headlineY = icon === 'staff' ? 430 : 350;
   SK.text(ctx, headline, 640, headlineY, 32, headlineColor);
 
-  SK.text(ctx, 'queue again', 640, 440 + (icon === 'staff' ? 80 : 0), 30, SK.ink);
-  SK.line(ctx, 545, 458 + (icon === 'staff' ? 80 : 0), 735, 458 + (icon === 'staff' ? 80 : 0), SK.ink, 2, 0.6);
-  G.buttons.push({ x: 490, y: 410 + (icon === 'staff' ? 80 : 0), w: 300, h: 60, action: function() { startGame(G.mode); } });
+  const offset = icon === 'staff' ? 80 : 0;
+  SK.text(ctx, 'queue again', 640, 440 + offset, 30, SK.ink);
+  SK.line(ctx, 545, 458 + offset, 735, 458 + offset, SK.ink, 2, 0.6);
+  G.buttons.push({ x: 490, y: 410 + offset, w: 300, h: 60, action: function() { startGame(G.mode); } });
 
-  SK.text(ctx, 'change to another queue', 640, 510 + (icon === 'staff' ? 80 : 0), 30, SK.ink);
-  SK.line(ctx, 480, 528 + (icon === 'staff' ? 80 : 0), 800, 528 + (icon === 'staff' ? 80 : 0), SK.ink, 2, 0.6);
-  G.buttons.push({ x: 490, y: 480 + (icon === 'staff' ? 80 : 0), w: 300, h: 60, action: function() { G.screen = 'mode'; } });
+  SK.text(ctx, 'change to another queue', 640, 510 + offset, 30, SK.ink);
+  SK.line(ctx, 480, 528 + offset, 800, 528 + offset, SK.ink, 2, 0.6);
+  G.buttons.push({ x: 490, y: 480 + offset, w: 300, h: 60, action: function() { G.screen = 'mode'; } });
 }
