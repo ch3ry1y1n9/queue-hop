@@ -130,15 +130,15 @@ function renderTutorial(ctx) {
       SK.text(ctx, card.label, x + 160, y + 60, 26, SK.ink, 'left');
     }
   } else {
-    const cards = [
+    const lines = [
       'alert doodle above head = they will turn around soon',
       'star box = answer an hku question, skip ahead (max 6)',
       'station announcement = staff is coming. do not jump.',
       "three hearts. lose all three and it's over.",
       'reach the front before 8:55'
     ];
-    for (let i = 0; i < cards.length; i++) {
-      SK.text(ctx, cards[i], 640, 200 + i * 60, 24, SK.ink);
+    for (let i = 0; i < lines.length; i++) {
+      SK.text(ctx, lines[i], 640, 200 + i * 60, 24, SK.ink);
     }
   }
 
@@ -187,18 +187,22 @@ function renderGame(ctx) {
 
   if (G.combo >= 2) SK.text(ctx, G.combo + '/5', CONFIG.playerX, 430, 22, SK.gold);
 
+  // timer top-left
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
 
+  // position count — CENTER TOP, larger font
+  SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
+
+  // hearts — TOP RIGHT
   for (let i = 0; i < CONFIG.hearts; i++) {
-    SK.heart(ctx, 570 + i * 60, 50, 26, i >= G.hearts);
+    SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
   }
 
-  SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 1240, 50, 26, SK.ink, 'right');
-
-  SK.rect(ctx, 1200, 90, 60, 60, SK.ink, 2.5);
-  SK.line(ctx, 1218, 100, 1218, 140, SK.ink, 4);
-  SK.line(ctx, 1242, 100, 1242, 140, SK.ink, 4);
-  G.buttons.push({ x: 1200, y: 90, w: 60, h: 60, action: function() { G.paused = true; } });
+  // pause button top-right corner below hearts
+  SK.rect(ctx, 1200, 110, 60, 60, SK.ink, 2.5);
+  SK.line(ctx, 1218, 120, 1218, 160, SK.ink, 4);
+  SK.line(ctx, 1242, 120, 1242, 160, SK.ink, 4);
+  G.buttons.push({ x: 1200, y: 110, w: 60, h: 60, action: function() { G.paused = true; } });
 
   if (G.staffState === 'banner') {
     SK.rect(ctx, 140, 90, 1000, 90, SK.blue, 3);
@@ -292,7 +296,6 @@ function wrapText(ctx, text, cx, cy, maxW, size, color, align) {
 /* ---------------- PAUSE ---------------- */
 
 function renderPause(ctx) {
-  // dim overlay over avatars
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillRect(0, 0, 1280, 720);
 
