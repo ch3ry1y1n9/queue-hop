@@ -52,16 +52,14 @@ function renderMode(ctx) {
   SK.text(ctx, 'choose your queue', 640, 140, 44);
 
   SK.rect(ctx, 330, 290, 620, 100, SK.ink, 3);
-  SK.text(ctx, 'easy — exit A1 line', 640, 320, 30);
-  SK.text(ctx, '~65 people', 640, 360, 22);
+  SK.text(ctx, 'easy — exit A1 line', 640, 340, 30);
   G.buttons.push({
     x: 330, y: 290, w: 620, h: 100,
     action: function() { startGame('easy'); }
   });
 
   SK.rect(ctx, 330, 420, 620, 100, SK.ink, 3);
-  SK.text(ctx, 'hard — exit A2 line', 640, 450, 30);
-  SK.text(ctx, '~100 people', 640, 490, 22);
+  SK.text(ctx, 'hard — exit A2 line', 640, 470, 30);
   G.buttons.push({
     x: 330, y: 420, w: 620, h: 100,
     action: function() { startGame('hard'); }
@@ -155,7 +153,7 @@ function renderTutorial(ctx) {
 
   SK.text(ctx, 'skip', 100, 660, 28, SK.ink);
   G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: function() {
-    if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; }
+    if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; G.tutorialReturn = null; }
     else G.screen = 'game';
   }});
 
@@ -202,13 +200,10 @@ function renderGame(ctx) {
   }
   CH.player(ctx, px, py, G.playerState);
 
-  // timer top-left
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
 
-  // position count — CENTER TOP, large
   SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
 
-  // hearts — TOP RIGHT
   for (let i = 0; i < CONFIG.hearts; i++) {
     SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
   }
@@ -219,7 +214,13 @@ function renderGame(ctx) {
   G.buttons.push({ x: 1200, y: 110, w: 60, h: 60, action: function() { G.paused = true; } });
 
   if (G.staffState === 'banner') {
+    const t = performance.now() / 1000;
+    const glow = 0.5 + 0.5 * Math.sin(t * 4);
+    ctx.save();
+    ctx.shadowColor = SK.blue;
+    ctx.shadowBlur = 14 + glow * 12;
     SK.text(ctx, 'lift traffic is very busy, please follow staff direction to queue in line', 640, 135, 30, SK.blue);
+    ctx.restore();
   }
 
   if (G.staffState === 'walking') {
@@ -231,6 +232,10 @@ function renderGame(ctx) {
   if (G.frozen && G.queue[0]) {
     SK.text(ctx, 'sorry!', px, py - 180, 46, SK.red);
     SK.text(ctx, 'moved back to position ' + (G.total - G.passed), 640, 200, 32, SK.red);
+  }
+
+  if (G.advanceMessageTimer > 0) {
+    SK.text(ctx, '+' + G.advanceMessageAmount + ' positions', 640, 210, 34, '#4a7a00');
   }
 
   if (G.trivia) renderTrivia(ctx);
@@ -269,7 +274,7 @@ function renderTrivia(ctx) {
 
   if (G.trivia.result) {
     if (G.trivia.result === 'correct') {
-      SK.text(ctx, 'correct! moved forward ' + G.trivia.skipAmount + ' positions', x + w / 2, y + h - 80, 32, SK.gold);
+      SK.text(ctx, 'correct!', x + w / 2, y + h - 80, 40, SK.gold);
     } else {
       SK.text(ctx, 'wrong!', x + w / 2, y + h - 80, 40, SK.red);
     }
@@ -312,12 +317,10 @@ function renderPause(ctx) {
 
   SK.text(ctx, 'paused', 640, 250, 44);
 
-  SK.rect(ctx, 490, 310, 300, 60, SK.ink, 3);
-  SK.text(ctx, 'resume', 640, 340, 28);
+  SK.text(ctx, 'resume', 640, 340, 34, SK.ink);
   G.buttons.push({ x: 490, y: 310, w: 300, h: 60, action: function() { G.paused = false; } });
 
-  SK.rect(ctx, 490, 380, 300, 60, SK.ink, 3);
-  SK.text(ctx, 'how to play', 640, 410, 28);
+  SK.text(ctx, 'how to play', 640, 410, 34, SK.ink);
   G.buttons.push({ x: 490, y: 380, w: 300, h: 60, action: function() {
     G.paused = false;
     G.screen = 'tutorial';
@@ -325,8 +328,7 @@ function renderPause(ctx) {
     G.tutorialReturn = 'pause';
   }});
 
-  SK.rect(ctx, 490, 450, 300, 60, SK.ink, 3);
-  SK.text(ctx, 'end and go to landing page', 640, 480, 26);
+  SK.text(ctx, 'end and go to landing page', 640, 480, 28, SK.ink);
   G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() {
     G.paused = false;
     G.screen = 'title';
@@ -369,6 +371,10 @@ function renderFail(ctx) {
   if (icon === 'staff') CH.person(ctx, 640, 260, { state: 'away', type: 'staff' });
 
   SK.text(ctx, headline, 640, 350, 32);
-  btn(ctx, 540, 440, 200, 60, 'queue again', function() { startGame(G.mode); });
-  btn(ctx, 540, 520, 200, 60, 'change to another queue', function() { G.screen = 'mode'; });
+
+  SK.text(ctx, 'queue again', 640, 440, 30, SK.ink);
+  G.buttons.push({ x: 490, y: 410, w: 300, h: 60, action: function() { startGame(G.mode); } });
+
+  SK.text(ctx, 'change to another queue', 640, 510, 30, SK.ink);
+  G.buttons.push({ x: 490, y: 480, w: 300, h: 60, action: function() { G.screen = 'mode'; } });
 }
