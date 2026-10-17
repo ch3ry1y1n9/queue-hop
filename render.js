@@ -13,8 +13,8 @@ function render(ctx) {
 }
 
 function btn(ctx, x, y, w, h, label, action) {
-  SK.rect(ctx, x, y, w, h, SK.ink, 3);
   SK.text(ctx, label, x + w / 2, y + h / 2, 30);
+  SK.line(ctx, x + 20, y + h / 2 + 20, x + w - 20, y + h / 2 + 20, SK.ink, 2, 0.6);
   G.buttons.push({ x: x, y: y, w: w, h: h, action: action });
 }
 
@@ -38,8 +38,8 @@ function renderTitle(ctx) {
 
   SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 20);
 
-  SK.rect(ctx, 540, 590, 200, 70, SK.ink, 3);
   SK.text(ctx, 'start', 640, 625, 32);
+  SK.line(ctx, 580, 650, 700, 650, SK.ink, 2, 0.6);
   G.buttons.push({
     x: 540, y: 590, w: 200, h: 70,
     action: function() { requestFullscreen(); G.screen = 'mode'; }
@@ -51,15 +51,15 @@ function renderTitle(ctx) {
 function renderMode(ctx) {
   SK.text(ctx, 'choose your queue', 640, 140, 44);
 
-  SK.rect(ctx, 330, 290, 620, 100, SK.ink, 3);
   SK.text(ctx, 'easy — exit A1 line', 640, 340, 30);
+  SK.line(ctx, 420, 365, 860, 365, SK.ink, 2, 0.6);
   G.buttons.push({
     x: 330, y: 290, w: 620, h: 100,
     action: function() { startGame('easy'); }
   });
 
-  SK.rect(ctx, 330, 420, 620, 100, SK.ink, 3);
   SK.text(ctx, 'hard — exit A2 line', 640, 470, 30);
+  SK.line(ctx, 420, 495, 860, 495, SK.ink, 2, 0.6);
   G.buttons.push({
     x: 330, y: 420, w: 620, h: 100,
     action: function() { startGame('hard'); }
@@ -152,6 +152,7 @@ function renderTutorial(ctx) {
   }
 
   SK.text(ctx, 'skip', 100, 660, 28, SK.ink);
+  SK.line(ctx, 78, 678, 122, 678, SK.ink, 2, 0.6);
   G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: function() {
     if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; G.tutorialReturn = null; }
     else G.screen = 'game';
@@ -159,9 +160,11 @@ function renderTutorial(ctx) {
 
   if (G.tutorialPage === 0) {
     SK.text(ctx, 'next', 1140, 660, 28, SK.ink);
+    SK.line(ctx, 1122, 678, 1158, 678, SK.ink, 2, 0.6);
     G.buttons.push({ x: 1120, y: 640, w: 100, h: 40, action: function() { G.tutorialPage = 1; } });
   } else {
     SK.text(ctx, 'got it', 1140, 660, 28, SK.ink);
+    SK.line(ctx, 1112, 678, 1168, 678, SK.ink, 2, 0.6);
     G.buttons.push({ x: 1100, y: 640, w: 140, h: 40, action: function() {
       if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; G.tutorialReturn = null; }
       else G.screen = 'briefing';
@@ -200,8 +203,7 @@ function renderGame(ctx) {
   }
   CH.player(ctx, px, py, G.playerState);
 
-  // pause button — drawn before trivia so its hit area doesn't block trivia options
-  SK.rect(ctx, 1200, 110, 60, 60, SK.ink, 2.5);
+  // pause button — two vertical bars, no box
   SK.line(ctx, 1218, 120, 1218, 160, SK.ink, 4);
   SK.line(ctx, 1242, 120, 1242, 160, SK.ink, 4);
   G.buttons.push({ x: 1200, y: 110, w: 60, h: 60, action: function() { G.paused = true; } });
@@ -225,10 +227,10 @@ function renderGame(ctx) {
     SK.text(ctx, '+' + G.advanceMessageAmount + ' positions', 640, 210, 34, '#4a7a00');
   }
 
-  // trivia overlay drawn here, before HUD, so HUD appears on top
+  // trivia overlay — only covers its own rectangle, HUD stays visible
   if (G.trivia) renderTrivia(ctx);
 
-  // HUD drawn AFTER trivia so timer / hearts / position stay visible
+  // HUD drawn after trivia so timer / hearts / position stay on top
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
   SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
   for (let i = 0; i < CONFIG.hearts; i++) {
@@ -243,7 +245,6 @@ function renderGame(ctx) {
 function renderTrivia(ctx) {
   const w = 960, h = 540;
   const x = (1280 - w) / 2, y = (720 - h) / 2;
-  // only cover the modal area — HUD stays visible above
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(x, y, w, h);
 
@@ -357,7 +358,7 @@ function renderSuccess(ctx) {
 /* ---------------- FAIL ---------------- */
 
 function renderFail(ctx) {
-  let icon = 'staff', headline = 'caught by station staff...';
+  let icon = 'staff', headline = 'caught by station staff. start over.';
   if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught...'; }
   if (G.failReason === 'clock') { icon = 'clock'; headline = 'leave home earlier next time.'; }
 
@@ -381,6 +382,7 @@ function renderFail(ctx) {
 
     SK.alert(ctx, 460, 240);
 
+    SK.rect(ctx, 510, 230, 260, 70, SK.ink, 3);
     SK.text(ctx, "don't jump the queue!", 640, 265, 24, SK.ink);
 
     SK.line(ctx, 870, 260, 890, 270, SK.ink, 2, 0.5);
