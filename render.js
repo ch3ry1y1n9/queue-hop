@@ -357,7 +357,7 @@ function renderSuccess(ctx) {
 /* ---------------- FAIL ---------------- */
 
 function renderFail(ctx) {
-  let icon = 'staff', headline = 'caught by station staff. start over.';
+  let icon = 'staff', headline = 'caught by station staff...';
   if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught...'; }
   if (G.failReason === 'clock') { icon = 'clock'; headline = 'leave home earlier next time.'; }
 
@@ -381,7 +381,6 @@ function renderFail(ctx) {
 
     SK.alert(ctx, 460, 240);
 
-    SK.rect(ctx, 510, 230, 260, 70, SK.ink, 3);
     SK.text(ctx, "don't jump the queue!", 640, 265, 24, SK.ink);
 
     SK.line(ctx, 870, 260, 890, 270, SK.ink, 2, 0.5);
