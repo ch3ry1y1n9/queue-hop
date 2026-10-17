@@ -4,7 +4,7 @@
 
 a white-background, hand-drawn sketch-style, single-button browser game about jumping the exit a lift queue before your 9:00 class.
 
-**[▶ play queue hop](https://YOUR-USERNAME.github.io/queue-hop/)**
+**[▶ play queue hop](https://ch3ry1y1n9.github.io/queue-hop/)**
 
 ---
 
@@ -57,6 +57,6 @@ this game is fictional. please queue properly in real life.
 ## run locally
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/queue-hop.git
+git clone https://github.com/ch3ry1y1n9/queue-hop.git
 cd queue-hop
 open index.html
