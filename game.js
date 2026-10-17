@@ -30,6 +30,8 @@ const G = {
   soundCtx: null,
   titleEnterTime: 0,
   paused: false,
+  advanceMessageTimer: 0,
+  advanceMessageAmount: 0,
 };
 
 function rand(a, b) { return a + Math.random() * (b - a); }
@@ -140,6 +142,8 @@ function startGame(mode) {
   G.failReason = '';
   G.paused = false;
   G.tutorialReturn = null;
+  G.advanceMessageTimer = 0;
+  G.advanceMessageAmount = 0;
 }
 
 function fmtClock(seconds) {
@@ -256,6 +260,8 @@ function resolveTrivia() {
   G.trivia = null;
   if (wasCorrect) {
     G.passed += skip;
+    G.advanceMessageAmount = skip;
+    G.advanceMessageTimer = 1.6;
     G.queue = makeQueue(6, G.mode, G.passed / G.total);
     maybeSpawnStar();
     checkWin();
@@ -278,6 +284,8 @@ function checkWin() {
 function update(dt) {
   if (G.screen !== 'game') return;
   if (G.paused) return;
+
+  if (G.advanceMessageTimer > 0) G.advanceMessageTimer -= dt;
 
   if (G.trivia) {
     if (G.trivia.result) {
