@@ -49,7 +49,5 @@ this game is fictional. please queue properly in real life.
 
 ## tech
 
-- vanilla html + css + javascript, no build step, no dependencies
 - rendered on html5 canvas
 - fonts: [gaegu](https://fonts.google.com/specimen/Gaegu) via google fonts
-- deployed on github pages
