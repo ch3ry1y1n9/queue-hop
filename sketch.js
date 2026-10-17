@@ -110,8 +110,6 @@ const CH = {
     SK.line(ctx, x - 18, headY - 16, x - 10, headY - 30, SK.ink, 2.5);
     SK.line(ctx, x - 6, headY - 24, x + 2, headY - 32, SK.ink, 2.5);
     SK.line(ctx, x + 8, headY - 20, x + 14, headY - 30, SK.ink, 2.5);
-    SK.rect(ctx, x - 34, y - 92, 16, 34, SK.ink, 2.5);
-    SK.line(ctx, x - 18, y - 88, x + 4, y - 92, SK.ink, 2, 0.4);
     if (state === 'blush') {
       SK.dot(ctx, x - 12, headY + 6, 4, SK.red);
       SK.dot(ctx, x + 12, headY + 6, 4, SK.red);
@@ -193,7 +191,6 @@ const CH = {
       }
     }
 
-    // zzz and paper only show when NOT looking
     if (!isLooking && member.type === 'dozing') {
       SK.text(ctx, 'z', x + 24, headY - 18, 22);
       SK.text(ctx, 'z', x + 38, headY - 34, 28);
