@@ -2,7 +2,7 @@
 
 desperately waiting in line for lifts at HKU station exit A...(sigh)
 
-so... we are inspired to make a single-button browser game about jumping the exit A lift queue before your 9:00 class.
+so... we make a single-button browser game about jumping the exit A lift queue before your 9:00 class.
 
 **[▶ play queue hop](https://ch3ry1y1n9.github.io/queue-hop/)**
 
