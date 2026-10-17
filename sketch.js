@@ -88,7 +88,7 @@ const SK = {
     ctx.bezierCurveTo(x - 12 * s, y - 4 * s, x - 6 * s, y - 12 * s, x, y - 5 * s);
     ctx.bezierCurveTo(x + 6 * s, y - 12 * s, x + 12 * s, y - 4 * s, x, y + 8 * s);
     ctx.stroke();
-  },
+  }
 };
 
 const CH = {
@@ -154,43 +154,57 @@ const CH = {
       return;
     }
 
-    SK.line(ctx, x, y - 44, x - 10, y);
-    SK.line(ctx, x, y - 44, x + 10, y);
-    SK.line(ctx, x, y - 44, x, y - 90);
-    SK.line(ctx, x, y - 80, x - 14, y - 60);
-    SK.line(ctx, x, y - 80, x + 14, y - 60);
-    SK.circle(ctx, x, headY, headR);
-
-    if (isLooking) {
-      SK.circle(ctx, x - 6, headY - 3, 5, SK.ink, 2);
-      SK.dot(ctx, x - 6, headY - 3, 2);
-      SK.circle(ctx, x + 8, headY - 3, 5, SK.ink, 2);
-      SK.dot(ctx, x + 8, headY - 3, 2);
-      SK.line(ctx, x - 12, headY - 12, x, headY - 12, SK.ink, 1.5, 0);
-      SK.line(ctx, x + 2, headY - 12, x + 14, headY - 12, SK.ink, 1.5, 0);
+    if (member.type === 'distracted') {
+      // body
+      SK.line(ctx, x, y - 44, x - 10, y);
+      SK.line(ctx, x, y - 44, x + 10, y);
+      SK.line(ctx, x, y - 44, x, y - 90);
+      // arm reaching forward to hold phone
+      SK.line(ctx, x, y - 78, x + 14, y - 70);
+      SK.line(ctx, x + 14, y - 70, x + 22, y - 62);
+      // other arm down
+      SK.line(ctx, x, y - 80, x - 14, y - 60);
+      // head tilted down
+      SK.circle(ctx, x, headY + 6, headR);
+      // hair strokes on top
+      SK.line(ctx, x - 10, headY - 4, x - 4, headY - 12, SK.ink, 2);
+      SK.line(ctx, x + 2, headY - 6, x + 8, headY - 12, SK.ink, 2);
+      // phone — small rounded rectangle in the hand
+      SK.rect(ctx, x + 18, y - 80, 18, 26, SK.ink, 2.5);
+      // screen content lines
+      SK.line(ctx, x + 21, y - 74, x + 33, y - 74, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 21, y - 68, x + 33, y - 68, SK.ink, 1.5, 0);
+      SK.line(ctx, x + 21, y - 62, x + 28, y - 62, SK.ink, 1.5, 0);
+      // blue glow radiating from phone screen
+      SK.line(ctx, x + 38, y - 74, x + 46, y - 78, SK.blue, 2.5, 0.4);
+      SK.line(ctx, x + 38, y - 66, x + 48, y - 66, SK.blue, 2.5, 0.4);
+      SK.line(ctx, x + 38, y - 58, x + 46, y - 54, SK.blue, 2.5, 0.4);
     } else {
-      SK.line(ctx, x - 10, headY - 10, x - 4, headY - 20, SK.ink, 2);
-      SK.line(ctx, x, headY - 10, x + 6, headY - 20, SK.ink, 2);
-      SK.line(ctx, x + 10, headY - 10, x + 14, headY - 20, SK.ink, 2);
+      SK.line(ctx, x, y - 44, x - 10, y);
+      SK.line(ctx, x, y - 44, x + 10, y);
+      SK.line(ctx, x, y - 44, x, y - 90);
+      SK.line(ctx, x, y - 80, x - 14, y - 60);
+      SK.line(ctx, x, y - 80, x + 14, y - 60);
+      SK.circle(ctx, x, headY, headR);
+
+      if (isLooking) {
+        SK.circle(ctx, x - 6, headY - 3, 5, SK.ink, 2);
+        SK.dot(ctx, x - 6, headY - 3, 2);
+        SK.circle(ctx, x + 8, headY - 3, 5, SK.ink, 2);
+        SK.dot(ctx, x + 8, headY - 3, 2);
+        SK.line(ctx, x - 12, headY - 12, x, headY - 12, SK.ink, 1.5, 0);
+        SK.line(ctx, x + 2, headY - 12, x + 14, headY - 12, SK.ink, 1.5, 0);
+      } else {
+        SK.line(ctx, x - 10, headY - 10, x - 4, headY - 20, SK.ink, 2);
+        SK.line(ctx, x, headY - 10, x + 6, headY - 20, SK.ink, 2);
+        SK.line(ctx, x + 10, headY - 10, x + 14, headY - 20, SK.ink, 2);
+      }
     }
 
     if (member.type === 'dozing') {
-      SK.text(ctx, 'z', x + 22, headY - 20, 16);
-      SK.text(ctx, 'z', x + 32, headY - 32, 20);
-      SK.text(ctx, 'z', x + 44, headY - 46, 24);
-    }
-
-    if (member.type === 'distracted') {
-      SK.line(ctx, x, y - 80, x + 6, y - 100, SK.ink, 2.5);
-      SK.line(ctx, x + 6, y - 100, x + 18, y - 100, SK.ink, 2.5);
-      SK.rect(ctx, x + 12, y - 128, 22, 34, SK.ink, 2.5);
-      SK.line(ctx, x + 15, y - 122, x + 31, y - 122, SK.ink, 1.5, 0);
-      SK.line(ctx, x + 15, y - 116, x + 31, y - 116, SK.ink, 1.5, 0);
-      SK.line(ctx, x + 15, y - 110, x + 26, y - 110, SK.ink, 1.5, 0);
-      SK.line(ctx, x + 34, y - 116, x + 42, y - 120, SK.blue, 2.5, 0.4);
-      SK.line(ctx, x + 34, y - 108, x + 44, y - 108, SK.blue, 2.5, 0.4);
-      SK.line(ctx, x + 34, y - 100, x + 42, y - 96, SK.blue, 2.5, 0.4);
-      SK.circle(ctx, x, headY + 4, headR, SK.ink, 3);
+      SK.text(ctx, 'z', x + 24, headY - 18, 22);
+      SK.text(ctx, 'z', x + 38, headY - 34, 28);
+      SK.text(ctx, 'z', x + 54, headY - 52, 34);
     }
 
     if (member.type === 'normal' && !isLooking) {
@@ -202,5 +216,5 @@ const CH = {
       const bob = Math.sin(performance.now() / 400) * 4;
       SK.star(ctx, x, headY - 60 + bob, 18);
     }
-  },
+  }
 };
