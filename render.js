@@ -15,7 +15,7 @@ function render(ctx) {
 function btn(ctx, x, y, w, h, label, action) {
   SK.rect(ctx, x, y, w, h, SK.ink, 3);
   SK.text(ctx, label, x + w / 2, y + h / 2, 30);
-  G.buttons.push({ x, y, w, h, action });
+  G.buttons.push({ x: x, y: y, w: w, h: h, action: action });
 }
 
 /* ---------------- TITLE ---------------- */
@@ -41,20 +41,20 @@ function renderTitle(ctx) {
   SK.text(ctx, 'class check-in is at 9:00 sharp.', 640, 500, 26);
   SK.text(ctx, 'jump the queue when people are not looking.', 640, 530, 26);
 
-  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 20, SK.ink);
+  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 20);
 
   SK.rect(ctx, 540, 590, 200, 70, SK.ink, 3);
   SK.text(ctx, 'start', 640, 625, 32);
   G.buttons.push({
     x: 540, y: 590, w: 200, h: 70,
-    action: () => { requestFullscreen(); G.screen = 'mode'; }
+    action: function() { requestFullscreen(); G.screen = 'mode'; }
   });
 
   SK.rect(ctx, 40, 40, 80, 80, SK.ink, 2);
-  SK.text(ctx, G.soundOn ? '♪' : '×', 80, 80, 36);
+  SK.text(ctx, G.soundOn ? '♪' : 'x', 80, 80, 36);
   G.buttons.push({
     x: 40, y: 40, w: 80, h: 80,
-    action: () => { G.soundOn = !G.soundOn; saveSound(); }
+    action: function() { G.soundOn = !G.soundOn; saveSound(); }
   });
 }
 
@@ -66,14 +66,20 @@ function renderMode(ctx) {
   SK.rect(ctx, 330, 290, 620, 100, SK.ink, 3);
   SK.text(ctx, 'easy — exit A1 line', 640, 320, 30);
   SK.text(ctx, '~65 people', 640, 360, 22);
-  G.buttons.push({ x: 330, y: 290, w: 620, h: 100, action: () => { startGame('easy'); } });
+  G.buttons.push({
+    x: 330, y: 290, w: 620, h: 100,
+    action: function() { startGame('easy'); }
+  });
 
   SK.rect(ctx, 330, 420, 620, 100, SK.ink, 3);
   SK.text(ctx, 'hard — exit A2 line', 640, 450, 30);
   SK.text(ctx, '~100 people', 640, 490, 22);
-  G.buttons.push({ x: 330, y: 420, w: 620, h: 100, action: () => { startGame('hard'); } });
+  G.buttons.push({
+    x: 330, y: 420, w: 620, h: 100,
+    action: function() { startGame('hard'); }
+  });
 
-  btn(ctx, 60, 630, 160, 60, 'back', () => { G.screen = 'title'; });
+  btn(ctx, 60, 630, 160, 60, 'back', function() { G.screen = 'title'; });
   SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 18);
 }
 
@@ -92,8 +98,11 @@ function renderBriefing(ctx) {
   SK.text(ctx, 'class check-in at 9:00 sharp.', 640, 380, 30);
   SK.text(ctx, 'reach the front before 8:55.', 640, 430, 30);
 
-  btn(ctx, 540, 530, 220, 70, 'how to play', () => { G.screen = 'tutorial'; G.tutorialPage = 0; });
-  btn(ctx, 540, 620, 220, 60, 'start queuing', () => { G.screen = 'game'; });
+  btn(ctx, 540, 530, 220, 70, 'how to play', function() {
+    G.screen = 'tutorial';
+    G.tutorialPage = 0;
+  });
+  btn(ctx, 540, 620, 220, 60, 'start queuing', function() { G.screen = 'game'; });
 }
 
 /* ---------------- TUTORIAL ---------------- */
@@ -107,7 +116,7 @@ function renderTutorial(ctx) {
       { type: 'looking', label: "looking — don't jump" },
       { type: 'dozing', label: 'dozing — safest to pass' },
       { type: 'distracted', label: 'distracted — on phone, medium window' },
-      { type: 'staff', label: 'staff — never jump' },
+      { type: 'staff', label: 'staff — never jump' }
     ];
     for (let i = 0; i < 4; i++) {
       const row = i < 2 ? 0 : 1;
@@ -122,7 +131,7 @@ function renderTutorial(ctx) {
       } else {
         CH.person(ctx, x + 110, y + cardH - 15, {
           state: card.type === 'looking' ? 'looking' : 'away',
-          type: card.type,
+          type: card.type
         });
       }
       SK.text(ctx, card.label, x + 230, y + 80, 24, SK.ink, 'left');
@@ -133,7 +142,7 @@ function renderTutorial(ctx) {
       { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
       { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
       { icon: 'hearts', label: "three hearts. lose all three and it's over." },
-      { icon: 'clock', label: 'reach the front before 8:55' },
+      { icon: 'clock', label: 'reach the front before 8:55' }
     ];
     const cardW = 900, cardH = 80;
     for (let i = 0; i < cards.length; i++) {
@@ -162,14 +171,14 @@ function renderTutorial(ctx) {
   }
 
   SK.text(ctx, 'skip', 100, 660, 28, SK.ink);
-  G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: () => { G.screen = 'game'; } });
+  G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: function() { G.screen = 'game'; } });
 
   if (G.tutorialPage === 0) {
     SK.text(ctx, 'next', 1140, 660, 28, SK.ink);
-    G.buttons.push({ x: 1120, y: 640, w: 100, h: 40, action: () => { G.tutorialPage = 1; } });
+    G.buttons.push({ x: 1120, y: 640, w: 100, h: 40, action: function() { G.tutorialPage = 1; } });
   } else {
     SK.text(ctx, 'got it', 1140, 660, 28, SK.ink);
-    G.buttons.push({ x: 1100, y: 640, w: 140, h: 40, action: () => { G.screen = 'briefing'; } });
+    G.buttons.push({ x: 1100, y: 640, w: 140, h: 40, action: function() { G.screen = 'briefing'; } });
   }
 }
 
@@ -217,7 +226,7 @@ function renderGame(ctx) {
   SK.rect(ctx, 1200, 90, 60, 60, SK.ink, 2.5);
   SK.line(ctx, 1218, 100, 1218, 140, SK.ink, 4);
   SK.line(ctx, 1242, 100, 1242, 140, SK.ink, 4);
-  G.buttons.push({ x: 1200, y: 90, w: 60, h: 60, action: () => { G.paused = true; } });
+  G.buttons.push({ x: 1200, y: 90, w: 60, h: 60, action: function() { G.paused = true; } });
 
   if (G.staffState === 'banner') {
     SK.rect(ctx, 140, 90, 1000, 90, SK.blue, 3);
@@ -243,9 +252,11 @@ function renderGame(ctx) {
     SK.text(ctx, 'paused', 640, 320, 40);
     SK.rect(ctx, 540, 360, 200, 60, SK.ink, 3);
     SK.text(ctx, 'resume', 640, 390, 28);
-    G.buttons.push({ x: 540, y: 360, w: 200, h: 60, action: () => { G.paused = false; } });
+    G.buttons.push({ x: 540, y: 360, w: 200, h: 60, action: function() { G.paused = false; } });
   }
 }
+
+/* ---------------- TRIVIA ---------------- */
 
 function renderTrivia(ctx) {
   ctx.fillStyle = '#ffffff';
@@ -258,4 +269,62 @@ function renderTrivia(ctx) {
   SK.text(ctx, G.trivia.question, x + w / 2, y + 130, 28);
 
   const optW = 280, optH = 140;
-  const totalW = 3
+  const totalW = 3 * optW + 2 * 20;
+  const startX = x + (w - totalW) / 2;
+  G.trivia.optionRects = [];
+  for (let i = 0; i < 3; i++) {
+    const ox = startX + i * (optW + 20);
+    const oy = y + 220;
+    const opt = G.trivia.options[i];
+    let color = SK.ink;
+    if (G.trivia.result && G.trivia.chosen === i) {
+      color = G.trivia.result === 'correct' ? SK.gold : SK.red;
+    }
+    SK.rect(ctx, ox, oy, optW, optH, color, 3);
+    SK.text(ctx, opt.label, ox + optW / 2, oy + optH / 2, 26);
+    G.trivia.optionRects.push({ x: ox, y: oy, w: optW, h: optH });
+  }
+  SK.text(ctx, 'tap the answer', x + w / 2, y + h - 30, 20);
+}
+
+/* ---------------- SUCCESS ---------------- */
+
+function renderSuccess(ctx) {
+  CH.player(ctx, 640, 280, 'idle');
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + 0.3;
+    SK.star(ctx, 640 + Math.cos(a) * 90, 280 + Math.sin(a) * 70, 14);
+  }
+  SK.text(ctx, 'phew, just make it!', 640, 400, 48);
+
+  const x = 440, y = 450, w = 400, h = 150;
+  SK.rect(ctx, x, y, w, h, SK.ink, 3);
+  SK.circle(ctx, x + 40, y + 35, 14, SK.ink, 2);
+  SK.text(ctx, G.passed + ' people cut', x + 80, y + 35, 24, SK.ink, 'left');
+  SK.circle(ctx, x + 40, y + 75, 14, SK.ink, 2);
+  SK.text(ctx, 'arrived ' + G.winTime, x + 80, y + 75, 24, SK.ink, 'left');
+  SK.rect(ctx, x + 30, y + 105, 24, 30, SK.ink, 2);
+  SK.text(ctx, 'exit ' + (G.mode === 'easy' ? 'A1' : 'A2'), x + 80, y + 115, 24, SK.ink, 'left');
+
+  btn(ctx, 540, 630, 200, 60, 'again', function() { G.screen = 'mode'; });
+}
+
+/* ---------------- FAIL ---------------- */
+
+function renderFail(ctx) {
+  let icon = 'staff', headline = 'caught by station staff. start over.';
+  if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught... leave home earlier...'; }
+  if (G.failReason === 'clock') { icon = 'clock'; headline = 'leave home earlier next time.'; }
+
+  if (icon === 'heart') SK.heart(ctx, 640, 180, 48, true);
+  if (icon === 'clock') {
+    SK.circle(ctx, 640, 180, 48, SK.ink, 3);
+    SK.line(ctx, 640, 180, 640, 150, SK.ink, 3);
+    SK.line(ctx, 640, 180, 670, 180, SK.ink, 3);
+  }
+  if (icon === 'staff') CH.person(ctx, 640, 260, { state: 'away', type: 'staff' });
+
+  SK.text(ctx, headline, 640, 350, 32);
+  btn(ctx, 540, 440, 200, 60, 'try again', function() { startGame(G.mode); });
+  btn(ctx, 540, 520, 200, 60, 'change mode', function() { G.screen = 'mode'; });
+}
