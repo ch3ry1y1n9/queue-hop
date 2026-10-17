@@ -34,14 +34,12 @@ function handleClick(lx, ly) {
     }
     return;
   }
-
   for (const b of G.buttons) {
     if (lx >= b.x && lx <= b.x + b.w && ly >= b.y && ly <= b.y + b.h) {
       b.action();
       return;
     }
   }
-
   if (G.screen === 'game' && !G.trivia) onJump();
 }
 
@@ -62,27 +60,4 @@ let lastTs = performance.now();
 function loop(ts) {
   const dt = Math.min(0.05, (ts - lastTs) / 1000);
   lastTs = ts;
-  try {
-    update(dt);
-    render(ctx);
-  } catch (err) {
-    console.error('render error:', err);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, 1280, 720);
-    ctx.fillStyle = '#c97b6b';
-    ctx.font = '28px "Gaegu", cursive';
-    ctx.textAlign = 'center';
-    ctx.fillText('error — see console (f12)', 640, 360);
-  }
-  requestAnimationFrame(loop);
-}
-
-loadBest();
-loadSound();
-resize();
-
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => { requestAnimationFrame(loop); });
-} else {
-  requestAnimationFrame(loop);
-}
+  try
