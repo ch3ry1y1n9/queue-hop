@@ -19,7 +19,7 @@ jump over the next person in the queue — but only when they aren't looking. wa
 
 ---
 
-## the rules
+## rules
 
 | you see | you do |
 |---|---|
@@ -46,7 +46,6 @@ this game is fictional. please queue properly in real life.
 
 ---
 
-## tech
+## acknowledgement
 
-- rendered on html5 canvas
 - fonts: [gaegu](https://fonts.google.com/specimen/Gaegu) via google fonts
