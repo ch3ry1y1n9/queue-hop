@@ -24,7 +24,7 @@ function renderTitle(ctx) {
   const t = performance.now() / 1000;
 
   SK.text(ctx, 'queue hop', 640, 140, 72);
-  SK.text(ctx, 'hku station · exit a', 640, 210, 34);
+  SK.text(ctx, 'hku station · exit A', 640, 210, 34);
 
   SK.line(ctx, 0, 560, 1280, 560, SK.ink, 2, 0.8);
 
@@ -32,7 +32,7 @@ function renderTitle(ctx) {
   const px = -100 + (CONFIG.playerX + 100) * walkIn;
   CH.player(ctx, px, 560, 'idle');
 
-  SK.text(ctx, 'you are queuing for the lift at exit a.', 640, 340, 28);
+  SK.text(ctx, 'you are queuing for the lift at exit A.', 640, 340, 28);
   SK.text(ctx, 'class check-in is at 9:00 sharp.', 640, 380, 28);
   SK.text(ctx, 'jump the queue when people are not looking.', 640, 420, 28);
 
@@ -43,13 +43,6 @@ function renderTitle(ctx) {
   G.buttons.push({
     x: 540, y: 590, w: 200, h: 70,
     action: function() { requestFullscreen(); G.screen = 'mode'; }
-  });
-
-  SK.rect(ctx, 40, 40, 80, 80, SK.ink, 2);
-  SK.text(ctx, G.soundOn ? '♪' : 'x', 80, 80, 36);
-  G.buttons.push({
-    x: 40, y: 40, w: 80, h: 80,
-    action: function() { G.soundOn = !G.soundOn; saveSound(); }
   });
 }
 
@@ -187,18 +180,14 @@ function renderGame(ctx) {
 
   if (G.combo >= 2) SK.text(ctx, G.combo + '/5', CONFIG.playerX, 430, 22, SK.gold);
 
-  // timer top-left
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
 
-  // position count — CENTER TOP, larger font
   SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
 
-  // hearts — TOP RIGHT
   for (let i = 0; i < CONFIG.hearts; i++) {
     SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
   }
 
-  // pause button top-right corner below hearts
   SK.rect(ctx, 1200, 110, 60, 60, SK.ink, 2.5);
   SK.line(ctx, 1218, 120, 1218, 160, SK.ink, 4);
   SK.line(ctx, 1242, 120, 1242, 160, SK.ink, 4);
