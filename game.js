@@ -11,6 +11,7 @@ const G = {
   queue: [],
   playerState: 'idle',
   jumpTimer: 0,
+  playerLunge: 0,
   frozen: false,
   frozenTimer: 0,
   staffState: 'idle',
@@ -29,7 +30,6 @@ const G = {
 
 function rand(a, b) { return a + Math.random() * (b - a); }
 function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
-function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 
 function loadBest() {
   try {
@@ -82,8 +82,14 @@ function makeMember(mode, progress = 0) {
 function typeDistribution(mode, progress) {
   const p = Math.min(1, Math.max(0, progress));
   const tables = {
-    easy: { early: { dozing: .55, distracted: .3, normal: .15, paranoid: 0 }, late: { dozing: .25, distracted: .4, normal: .25, paranoid: .1 } },
-    hard: { early: { dozing: .35, distracted: .3, normal: .2, paranoid: .15 }, late: { dozing: .1, distracted: .3, normal: .2, paranoid: .4 } },
+    easy: {
+      early: { dozing: .55, distracted: .3, normal: .15, paranoid: 0 },
+      late:  { dozing: .25, distracted: .4, normal: .25, paranoid: .1 },
+    },
+    hard: {
+      early: { dozing: .35, distracted: .3, normal: .2, paranoid: .15 },
+      late:  { dozing: .1,  distracted: .3, normal: .2, paranoid: .4 },
+    },
   };
   const t = tables[mode];
   const out = [];
@@ -112,6 +118,7 @@ function startGame(mode) {
   G.queue = makeQueue(6, mode, 0);
   G.playerState = 'idle';
   G.jumpTimer = 0;
+  G.playerLunge = 0;
   G.frozen = false;
   G.frozenTimer = 0;
   G.staffState = 'idle';
@@ -119,7 +126,7 @@ function startGame(mode) {
   G.staffPhase = 0;
   G.trivia = null;
   G.usedQuestions = [];
-  G.screen = 'game';
+  G.screen = 'briefing';
   G.winTime = '';
   G.failReason = '';
 }
@@ -172,17 +179,16 @@ function onJump() {
     return;
   }
 
-  // success
   const hadStar = target.hasStar;
   G.passed++;
   G.successAdvances++;
   G.combo++;
+  G.playerLunge = 0.6;
   G.queue.shift();
   G.queue.push(makeMember(G.mode, G.passed / G.total));
   if (G.combo >= CONFIG.comboStep) {
     G.passed++;
     G.combo = 0;
-    setTimeout(() => {}, 0);
   }
   maybeSpawnStar();
 
@@ -291,7 +297,14 @@ function update(dt) {
   }
 
   if (G.jumpTimer > 0) G.jumpTimer -= dt;
-  if (G.jumpTimer <= 0 && G.playerState === 'jump') G.playerState = 'idle';
+  if (G.jumpTimer <= 0 && G.playerState === 'jump') {
+    G.playerState = 'idle';
+    G.playerLunge = 0.6;
+  }
+  if (G.playerLunge > 0) {
+    G.playerLunge -= dt * 3;
+    if (G.playerLunge < 0) G.playerLunge = 0;
+  }
 
   if (G.frozen) {
     G.frozenTimer -= dt;
@@ -306,7 +319,6 @@ function update(dt) {
   }
 
   if (G.staffState !== 'walking') {
-    const progress = G.passed / G.total;
     for (const m of G.queue) {
       m.timer -= dt;
       if (m.timer <= 0) {
