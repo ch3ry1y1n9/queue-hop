@@ -15,7 +15,8 @@ you're stuck in the HKU station exit A lift queue at 8:50. class check-in is 9:0
 - **desktop (recommended)** — press `space` to jump
 - **mobile** — tap anywhere to jump
 
-jump over the next person in the queue — but only when they aren't looking. watch for the little red alert doodle above their head: that means they're about to turn around.
+jump over the next person in the queue — but only when they aren't looking. 
+watch for the little red alert doodle above their head: that means they're about to turn around.
 
 ---
 
