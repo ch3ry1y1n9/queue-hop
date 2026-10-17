@@ -371,17 +371,46 @@ function renderFail(ctx) {
     SK.line(ctx, 640, 180, 640, 150, SK.ink, 3);
     SK.line(ctx, 640, 180, 670, 180, SK.ink, 3);
   }
-  if (icon === 'staff') CH.person(ctx, 640, 260, { state: 'away', type: 'staff' });
+
+  // staff fail — scolding scene
+  if (icon === 'staff') {
+    // ground line
+    SK.line(ctx, 0, 380, 1280, 380, SK.ink, 2, 0.8);
+
+    // staff on the left, facing right, arm raised (already drawn by person with staff type)
+    CH.person(ctx, 460, 380, { state: 'away', type: 'staff' });
+
+    // player on the right, facing left — use blush state and mirror it
+    ctx.save();
+    ctx.translate(820, 380);
+    ctx.scale(-1, 1);
+    CH.player(ctx, 0, 0, 'blush');
+    ctx.restore();
+
+    // exclamation mark above staff (shouting)
+    SK.alert(ctx, 460, 240);
+
+    // wobbly speech bubble from staff toward player
+    SK.rect(ctx, 510, 230, 260, 70, SK.ink, 3);
+    SK.text(ctx, "don't jump the queue!", 640, 265, 24, SK.ink);
+
+    // head-shaking motion lines near player
+    SK.line(ctx, 870, 260, 890, 270, SK.ink, 2, 0.5);
+    SK.line(ctx, 870, 280, 890, 290, SK.ink, 2, 0.5);
+    SK.line(ctx, 870, 300, 890, 310, SK.ink, 2, 0.5);
+  }
 
   let headlineColor = SK.ink;
   if (G.failReason === 'hearts') headlineColor = SK.red;
-  SK.text(ctx, headline, 640, 350, 32, headlineColor);
+  if (G.failReason === 'staff') headlineColor = SK.red;
+  const headlineY = icon === 'staff' ? 430 : 350;
+  SK.text(ctx, headline, 640, headlineY, 32, headlineColor);
 
-  SK.text(ctx, 'queue again', 640, 440, 30, SK.ink);
-  SK.line(ctx, 545, 458, 735, 458, SK.ink, 2, 0.6);
-  G.buttons.push({ x: 490, y: 410, w: 300, h: 60, action: function() { startGame(G.mode); } });
+  SK.text(ctx, 'queue again', 640, 440 + (icon === 'staff' ? 80 : 0), 30, SK.ink);
+  SK.line(ctx, 545, 458 + (icon === 'staff' ? 80 : 0), 735, 458 + (icon === 'staff' ? 80 : 0), SK.ink, 2, 0.6);
+  G.buttons.push({ x: 490, y: 410 + (icon === 'staff' ? 80 : 0), w: 300, h: 60, action: function() { startGame(G.mode); } });
 
-  SK.text(ctx, 'change to another queue', 640, 510, 30, SK.ink);
-  SK.line(ctx, 480, 528, 800, 528, SK.ink, 2, 0.6);
-  G.buttons.push({ x: 490, y: 480, w: 300, h: 60, action: function() { G.screen = 'mode'; } });
+  SK.text(ctx, 'change to another queue', 640, 510 + (icon === 'staff' ? 80 : 0), 30, SK.ink);
+  SK.line(ctx, 480, 528 + (icon === 'staff' ? 80 : 0), 800, 528 + (icon === 'staff' ? 80 : 0), SK.ink, 2, 0.6);
+  G.buttons.push({ x: 490, y: 480 + (icon === 'staff' ? 80 : 0), w: 300, h: 60, action: function() { G.screen = 'mode'; } });
 }
