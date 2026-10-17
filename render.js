@@ -32,14 +32,9 @@ function renderTitle(ctx) {
   const px = -100 + (CONFIG.playerX + 100) * walkIn;
   CH.player(ctx, px, 560, 'idle');
 
-  SK.circle(ctx, 640, 400, 30, SK.ink, 2.5);
-  SK.line(ctx, 640, 400, 640, 380, SK.ink, 2.5);
-  SK.line(ctx, 640, 400, 660, 400, SK.ink, 2.5);
-  SK.text(ctx, '8:50', 720, 400, 34);
-
-  SK.text(ctx, 'you are queuing for the lift at exit a.', 640, 470, 26);
-  SK.text(ctx, 'class check-in is at 9:00 sharp.', 640, 500, 26);
-  SK.text(ctx, 'jump the queue when people are not looking.', 640, 530, 26);
+  SK.text(ctx, 'you are queuing for the lift at exit a.', 640, 340, 28);
+  SK.text(ctx, 'class check-in is at 9:00 sharp.', 640, 380, 28);
+  SK.text(ctx, 'jump the queue when people are not looking.', 640, 420, 28);
 
   SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 20);
 
@@ -115,58 +110,35 @@ function renderTutorial(ctx) {
     const cards = [
       { type: 'looking', label: "looking — don't jump" },
       { type: 'dozing', label: 'dozing — safest to pass' },
-      { type: 'distracted', label: 'distracted — on phone, medium window' },
+      { type: 'distracted', label: 'distracted — on phone' },
       { type: 'staff', label: 'staff — never jump' }
     ];
     for (let i = 0; i < 4; i++) {
       const row = i < 2 ? 0 : 1;
       const col = i % 2;
-      const cardW = 540, cardH = 160;
-      const x = 100 + col * 560;
-      const y = 190 + row * 180;
-      SK.rect(ctx, x, y, cardW, cardH, SK.ink, 3);
+      const x = 140 + col * 520;
+      const y = 220 + row * 180;
       const card = cards[i];
       if (card.type === 'staff') {
-        CH.person(ctx, x + 110, y + cardH - 15, { state: 'away', type: 'staff' });
+        CH.person(ctx, x + 80, y + 140, { state: 'away', type: 'staff' });
       } else {
-        CH.person(ctx, x + 110, y + cardH - 15, {
+        CH.person(ctx, x + 80, y + 140, {
           state: card.type === 'looking' ? 'looking' : 'away',
           type: card.type
         });
       }
-      SK.text(ctx, card.label, x + 230, y + 80, 24, SK.ink, 'left');
+      SK.text(ctx, card.label, x + 160, y + 60, 26, SK.ink, 'left');
     }
   } else {
     const cards = [
-      { icon: 'alert', label: 'alert doodle above head = they will turn around soon' },
-      { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
-      { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
-      { icon: 'hearts', label: "three hearts. lose all three and it's over." },
-      { icon: 'clock', label: 'reach the front before 8:55' }
+      'alert doodle above head = they will turn around soon',
+      'star box = answer an hku question, skip ahead (max 6)',
+      'station announcement = staff is coming. do not jump.',
+      "three hearts. lose all three and it's over.",
+      'reach the front before 8:55'
     ];
-    const cardW = 900, cardH = 80;
     for (let i = 0; i < cards.length; i++) {
-      const x = (1280 - cardW) / 2;
-      const y = 170 + i * 88;
-      SK.rect(ctx, x, y, cardW, cardH, SK.ink, 3);
-      const card = cards[i];
-      if (card.icon === 'alert') SK.alert(ctx, x + 60, y + cardH / 2);
-      if (card.icon === 'star') SK.star(ctx, x + 60, y + cardH / 2, 20);
-      if (card.icon === 'hearts') {
-        SK.heart(ctx, x + 40, y + cardH / 2, 18);
-        SK.heart(ctx, x + 70, y + cardH / 2, 18);
-        SK.heart(ctx, x + 100, y + cardH / 2, 18);
-      }
-      if (card.icon === 'clock') {
-        SK.circle(ctx, x + 60, y + cardH / 2, 22, SK.ink, 2);
-        SK.line(ctx, x + 60, y + cardH / 2, x + 60, y + cardH / 2 - 14, SK.ink, 2);
-        SK.line(ctx, x + 60, y + cardH / 2, x + 72, y + cardH / 2, SK.ink, 2);
-      }
-      if (card.icon === 'announce') {
-        SK.rect(ctx, x + 25, y + 22, 70, 36, SK.blue, 2.5);
-        SK.text(ctx, '!', x + 60, y + 40, 26, SK.blue);
-      }
-      SK.text(ctx, card.label, x + 160, y + cardH / 2, 24, SK.ink, 'left');
+      SK.text(ctx, cards[i], 640, 200 + i * 60, 24, SK.ink);
     }
   }
 
@@ -243,17 +215,12 @@ function renderGame(ctx) {
     const bx = CONFIG.slotX[0], by = 420;
     SK.rect(ctx, bx - 50, by - 24, 130, 48, SK.ink, 2);
     SK.text(ctx, 'sorry!', bx + 15, by, 24);
+    SK.text(ctx, 'got caught! back to position ' + (G.total - G.passed), 640, 200, 28, SK.red);
   }
 
   if (G.trivia) renderTrivia(ctx);
 
-  if (G.paused && !G.trivia) {
-    SK.rect(ctx, 490, 280, 300, 160, SK.ink, 3);
-    SK.text(ctx, 'paused', 640, 320, 40);
-    SK.rect(ctx, 540, 360, 200, 60, SK.ink, 3);
-    SK.text(ctx, 'resume', 640, 390, 28);
-    G.buttons.push({ x: 540, y: 360, w: 200, h: 60, action: function() { G.paused = false; } });
-  }
+  if (G.paused && !G.trivia) renderPause(ctx);
 }
 
 /* ---------------- TRIVIA ---------------- */
@@ -262,29 +229,87 @@ function renderTrivia(ctx) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, 1280, 720);
 
-  const w = 960, h = 500;
+  const w = 960, h = 540;
   const x = (1280 - w) / 2, y = (720 - h) / 2;
   SK.rect(ctx, x, y, w, h, SK.ink, 3);
   SK.star(ctx, x + w / 2, y + 50, 26);
-  SK.text(ctx, G.trivia.question, x + w / 2, y + 130, 28);
+  SK.text(ctx, G.trivia.question, x + w / 2, y + 120, 26);
 
-  const optW = 280, optH = 140;
+  const optW = 280, optH = 150;
   const totalW = 3 * optW + 2 * 20;
   const startX = x + (w - totalW) / 2;
   G.trivia.optionRects = [];
   for (let i = 0; i < 3; i++) {
     const ox = startX + i * (optW + 20);
-    const oy = y + 220;
+    const oy = y + 200;
     const opt = G.trivia.options[i];
     let color = SK.ink;
     if (G.trivia.result && G.trivia.chosen === i) {
       color = G.trivia.result === 'correct' ? SK.gold : SK.red;
     }
     SK.rect(ctx, ox, oy, optW, optH, color, 3);
-    SK.text(ctx, opt.label, ox + optW / 2, oy + optH / 2, 26);
+    wrapText(ctx, opt.label, ox + optW / 2, oy + optH / 2, optW - 20, 26, SK.ink, 'center');
     G.trivia.optionRects.push({ x: ox, y: oy, w: optW, h: optH });
   }
-  SK.text(ctx, 'tap the answer', x + w / 2, y + h - 30, 20);
+
+  if (G.trivia.result) {
+    if (G.trivia.result === 'correct') {
+      SK.text(ctx, 'correct!', x + w / 2, y + h - 80, 40, SK.gold);
+    } else {
+      SK.text(ctx, 'wrong!', x + w / 2, y + h - 80, 40, SK.red);
+    }
+  } else {
+    SK.text(ctx, 'tap the answer', x + w / 2, y + h - 40, 20);
+  }
+}
+
+function wrapText(ctx, text, cx, cy, maxW, size, color, align) {
+  ctx.font = size + 'px "Gaegu", "Patrick Hand", cursive';
+  ctx.fillStyle = color;
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+  const words = String(text).split(' ');
+  const lines = [];
+  let line = '';
+  for (let i = 0; i < words.length; i++) {
+    const test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = words[i];
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  const lineH = size + 4;
+  const totalH = lines.length * lineH;
+  const startY = cy - totalH / 2 + lineH / 2;
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i], cx, startY + i * lineH);
+  }
+}
+
+/* ---------------- PAUSE ---------------- */
+
+function renderPause(ctx) {
+  // dim overlay over avatars
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillRect(0, 0, 1280, 720);
+
+  SK.rect(ctx, 390, 220, 500, 280, SK.ink, 3);
+  SK.text(ctx, 'paused', 640, 270, 44);
+
+  SK.rect(ctx, 490, 310, 300, 60, SK.ink, 3);
+  SK.text(ctx, 'resume', 640, 340, 28);
+  G.buttons.push({ x: 490, y: 310, w: 300, h: 60, action: function() { G.paused = false; } });
+
+  SK.rect(ctx, 490, 380, 300, 60, SK.ink, 3);
+  SK.text(ctx, 'how to play', 640, 410, 28);
+  G.buttons.push({ x: 490, y: 380, w: 300, h: 60, action: function() { G.paused = false; G.screen = 'tutorial'; G.tutorialPage = 0; } });
+
+  SK.rect(ctx, 490, 450, 300, 60, SK.ink, 3);
+  SK.text(ctx, 'go to landing page', 640, 480, 28);
+  G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() { G.paused = false; G.screen = 'title'; } });
 }
 
 /* ---------------- SUCCESS ---------------- */
