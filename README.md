@@ -27,7 +27,7 @@ jump over the next person in the queue — but only when they aren't looking. wa
 | person dozing | pass asap|
 | person on phone | pass asap |
 | station staff | **never jump** — caught = restart |
-| floating star | jump and hit it, answer an HKU trivia question, skip ahead 3 positions |
+| floating star | jump and hit it, answer an HKU trivia question, skip ahead |
 
 you have **3 hearts**. lose all three and it's game over. if the clock hits 8:55 before you reach the front — *"leave home earlier next time."*
 
