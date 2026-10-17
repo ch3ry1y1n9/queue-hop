@@ -44,7 +44,7 @@ const TRIVIA = [
   { q: 'what is the short form for may hall?', opts: ['mh', 'my', 'mah'], a: 0 },
   { q: 'what is the short form for graduate house?', opts: ['gh', 'grh', 'gd'], a: 0 },
   { q: 'what is the short form for kadoorie biological sciences building?', opts: ['kbsb', 'kbb', 'kbs'], a: 0 },
-  { q: 'where is university health service?', opts: ['ming wai complex', 'chong yuet ming amenities centre', 'fong shu chuen amenities centre'], a: 0 },
+  { q: 'where is university health service?', opts: ['ming wah complex', 'chong yuet ming amenities centre', 'fong shu chuen amenities centre'], a: 0 },
   { q: 'where is parknshop?', opts: ['ming wai complex', 'chong yuet ming amenities centre', 'fong shu chuen amenities centre'], a: 1 },
   { q: 'correct name for the hku law library?', opts: ['lui che woo law library', "isn't it just law library", 'tin ka ping education library'], a: 0 },
   { q: "which bus line doesn't stop at hku west gate?", opts: ['103', '7', '971'], a: 2 },
