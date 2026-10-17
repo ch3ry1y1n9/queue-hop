@@ -202,7 +202,7 @@ function triggerCatch() {
   G.passed = Math.max(0, G.passed - CONFIG.catchPenalty);
   G.combo = 0;
   beep(300, 0.2);
-  setTimeout(() => {
+  setTimeout(function() {
     if (G.hearts <= 0) {
       G.failReason = 'hearts';
       G.screen = 'fail';
@@ -210,7 +210,6 @@ function triggerCatch() {
       return;
     }
     G.queue = makeQueue(6, G.mode, G.passed / G.total);
-    G.passedQueue = [];
     maybeSpawnStar();
     G.frozen = false;
     G.playerState = 'idle';
