@@ -18,37 +18,36 @@ function btn(ctx, x, y, w, h, label, action) {
   G.buttons.push({ x, y, w, h, action });
 }
 
-function drawGround(ctx) {
-  SK.line(ctx, 0, CONFIG.groundY, 1280, CONFIG.groundY, SK.ink, 2, 0.8);
-}
-
 /* ---------------- TITLE ---------------- */
 
 function renderTitle(ctx) {
   SK.rect(ctx, 460, 130, 360, 140, SK.ink, 3);
   SK.rect(ctx, 500, 150, 40, 40, SK.ink, 2);
-  SK.text(ctx, 'exit a', 640, 240, 44);
+  SK.text(ctx, 'exit a', 640, 220, 44);
   SK.text(ctx, 'hku station · exit a', 640, 330, 34);
-  drawGround(ctx);
-  CH.player(ctx, CONFIG.playerX, CONFIG.groundY, 'idle');
-  SK.circle(ctx, 640, 425, 22, SK.ink, 2);
-  SK.line(ctx, 640, 425, 640, 410, SK.ink, 2);
-  SK.line(ctx, 640, 425, 650, 425, SK.ink, 2);
-  SK.text(ctx, '8:50', 700, 425, 28);
 
-  btn(ctx, 540, 580, 200, 60, 'start', () => {
-    requestFullscreen();
-    G.screen = 'mode';
+  SK.line(ctx, 0, 560, 1280, 560, SK.ink, 2, 0.8);
+
+  SK.circle(ctx, 640, 430, 22, SK.ink, 2);
+  SK.line(ctx, 640, 430, 640, 415, SK.ink, 2);
+  SK.line(ctx, 640, 430, 650, 430, SK.ink, 2);
+  SK.text(ctx, '8:50', 700, 430, 28);
+
+  SK.rect(ctx, 540, 570, 200, 60, SK.ink, 3);
+  SK.text(ctx, 'start', 640, 600, 28);
+  G.buttons.push({
+    x: 540, y: 570, w: 200, h: 60,
+    action: () => { requestFullscreen(); G.screen = 'mode'; }
   });
 
-  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 18, SK.ink);
+  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 680, 18, SK.ink);
 
-  const sx = 40, sy = 40;
-  SK.rect(ctx, sx, sy, 60, 60, SK.ink, 2);
-  SK.text(ctx, G.soundOn ? '♪' : '×', sx + 30, sy + 30, 30);
-  G.buttons.push({ x: sx, y: sy, w: 60, h: 60, action: () => {
-    G.soundOn = !G.soundOn; saveSound();
-  }});
+  SK.rect(ctx, 40, 40, 60, 60, SK.ink, 2);
+  SK.text(ctx, G.soundOn ? '♪' : '×', 70, 70, 30);
+  G.buttons.push({
+    x: 40, y: 40, w: 60, h: 60,
+    action: () => { G.soundOn = !G.soundOn; saveSound(); }
+  });
 }
 
 /* ---------------- MODE ---------------- */
@@ -80,7 +79,7 @@ function renderBriefing(ctx) {
 
   SK.rect(ctx, 440, 220, 400, 100, SK.ink, 3);
   SK.circle(ctx, 500, 270, 15, SK.ink, 2);
-  SK.text(ctx, `people ahead: ${G.total}`, 660, 270, 26);
+  SK.text(ctx, 'people ahead: ' + G.total, 660, 270, 26);
 
   SK.text(ctx, 'class check-in at 9:00 sharp.', 640, 380, 28);
   SK.text(ctx, 'reach the front before 8:55.', 640, 430, 28);
@@ -106,7 +105,7 @@ function renderTutorial(ctx) {
       { type: 'staff', label: 'staff — never jump' },
     ];
     let i = 0;
-    for (const row of [0, 1]) {
+    for (let row = 0; row < 2; row++) {
       const count = row === 0 ? 3 : 2;
       const cardW = 380, cardH = 130;
       const totalW = count * cardW + (count - 1) * 20;
@@ -178,63 +177,55 @@ function renderTutorial(ctx) {
 /* ---------------- GAME ---------------- */
 
 function renderGame(ctx) {
-  drawGround(ctx);
+  SK.line(ctx, 0, 560, 1280, 560, SK.ink, 2, 0.8);
 
-  // queue
   for (let i = 0; i < G.queue.length; i++) {
     const m = G.queue[i];
     let offsetX = 0;
     if (G.frozen) offsetX = Math.sin(performance.now() / 60) * 3;
-    CH.person(ctx, CONFIG.slotX[i] + offsetX, CONFIG.groundY, m);
+    CH.person(ctx, CONFIG.slotX[i] + offsetX, 560, m);
   }
 
-  // player with forward lunge
   const jumping = G.playerState === 'jump' && G.jumpTimer > 0;
-  let py = CONFIG.groundY;
+  let py = 560;
   let px = CONFIG.playerX;
   if (jumping) {
     const p = 1 - (G.jumpTimer / CONFIG.jumpDuration);
-    py = CONFIG.groundY - Math.sin(p * Math.PI) * 160;
+    py = 560 - Math.sin(p * Math.PI) * 160;
     px = CONFIG.playerX + Math.sin(p * Math.PI) * 100;
   } else if (G.playerLunge > 0) {
     px = CONFIG.playerX + G.playerLunge * 100;
   }
   CH.player(ctx, px, py, G.playerState);
 
-  // combo label (only shows when you have a combo)
   if (G.combo >= 2) {
-    SK.text(ctx, `${G.combo}/5`, CONFIG.playerX, CONFIG.groundY - 110, 20, SK.gold);
+    SK.text(ctx, G.combo + '/5', CONFIG.playerX, 450, 20, SK.gold);
   }
 
-  // hud
   SK.text(ctx, currentClockString(), 1240, 40, 26, SK.ink, 'right');
   for (let i = 0; i < CONFIG.hearts; i++) {
-    SK.heart(ctx, 1180 + i * 40 - 60, 92, 16, i >= G.hearts);
+    SK.heart(ctx, 1120 + i * 40, 92, 16, i >= G.hearts);
   }
-  SK.text(ctx, `people ${Math.max(0, G.total - G.passed)}`, 1240, 140, 22, SK.ink, 'right');
+  SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 1240, 140, 22, SK.ink, 'right');
 
-  // banner
   if (G.staffState === 'banner') {
     SK.rect(ctx, 140, 90, 1000, 80, SK.blue, 3);
     SK.text(ctx, 'lift traffic is very busy, please follow staff direction to queue in line', 640, 130, 22, SK.ink);
   }
 
-  // staff
   if (G.staffState === 'walking') {
     const sx = 1280 - G.staffPhase * 1400;
-    SK.rect(ctx, sx - 25, CONFIG.groundY - 90, 50, 70, SK.red, 2);
-    CH.person(ctx, sx, CONFIG.groundY, { state: 'away', type: 'normal' });
-    SK.alert(ctx, sx, CONFIG.groundY - 130);
+    CH.person(ctx, sx, 560, { state: 'away', type: 'normal' });
+    SK.rect(ctx, sx - 25, 470, 50, 70, SK.red, 2);
+    SK.alert(ctx, sx, 430);
   }
 
-  // catch bubble
   if (G.frozen && G.queue[0]) {
-    const bx = CONFIG.slotX[0], by = CONFIG.groundY - 120;
-    SK.rect(ctx, bx - 40, by - 40, 120, 40, SK.ink, 2);
-    SK.text(ctx, 'sorry!', bx + 20, by - 20, 22);
+    const bx = CONFIG.slotX[0], by = 440;
+    SK.rect(ctx, bx - 40, by - 20, 120, 40, SK.ink, 2);
+    SK.text(ctx, 'sorry!', bx + 20, by, 22);
   }
 
-  // trivia modal
   if (G.trivia) renderTrivia(ctx);
 }
 
@@ -280,13 +271,13 @@ function renderSuccess(ctx) {
   SK.rect(ctx, x, y, w, h, SK.ink, 3);
 
   SK.circle(ctx, x + 40, y + 35, 12, SK.ink, 2);
-  SK.text(ctx, `${G.passed} people cut`, x + 80, y + 35, 22, SK.ink, 'left');
+  SK.text(ctx, G.passed + ' people cut', x + 80, y + 35, 22, SK.ink, 'left');
 
   SK.circle(ctx, x + 40, y + 75, 12, SK.ink, 2);
-  SK.text(ctx, `arrived ${G.winTime}`, x + 80, y + 75, 22, SK.ink, 'left');
+  SK.text(ctx, 'arrived ' + G.winTime, x + 80, y + 75, 22, SK.ink, 'left');
 
   SK.rect(ctx, x + 30, y + 105, 24, 30, SK.ink, 2);
-  SK.text(ctx, `exit ${G.mode === 'easy' ? 'a1' : 'a2'}`, x + 80, y + 115, 22, SK.ink, 'left');
+  SK.text(ctx, 'exit ' + (G.mode === 'easy' ? 'a1' : 'a2'), x + 80, y + 115, 22, SK.ink, 'left');
 
   btn(ctx, 540, 620, 200, 60, 'again', () => { G.screen = 'mode'; });
 }
