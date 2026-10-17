@@ -207,13 +207,7 @@ function renderGame(ctx) {
   G.buttons.push({ x: 1200, y: 110, w: 60, h: 60, action: function() { G.paused = true; } });
 
   if (G.staffState === 'banner') {
-    const t = performance.now() / 1000;
-    const glow = 0.5 + 0.5 * Math.sin(t * 4);
-    ctx.save();
-    ctx.shadowColor = SK.blue;
-    ctx.shadowBlur = 14 + glow * 12;
     SK.text(ctx, 'lift traffic is very busy, please follow staff direction to queue in line', 640, 135, 30, SK.blue);
-    ctx.restore();
   }
 
   if (G.staffState === 'walking') {
