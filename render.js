@@ -79,9 +79,7 @@ function renderBriefing(ctx) {
   SK.line(ctx, 640, 130, 660, 130, SK.ink, 2.5);
   SK.text(ctx, '8:50', 720, 130, 34);
 
-  SK.rect(ctx, 440, 220, 400, 100, SK.ink, 3);
-  SK.circle(ctx, 500, 270, 18, SK.ink, 2);
-  SK.text(ctx, 'people ahead: ' + G.total, 680, 270, 30);
+  SK.text(ctx, 'people ahead: ' + G.total, 640, 270, 34);
 
   SK.text(ctx, 'class check-in at 9:00 sharp.', 640, 380, 30);
   SK.text(ctx, 'reach the front before 8:55.', 640, 430, 30);
@@ -123,15 +121,34 @@ function renderTutorial(ctx) {
       SK.text(ctx, card.label, x + 160, y + 60, 26, SK.ink, 'left');
     }
   } else {
-    const lines = [
-      'alert doodle above head = they will turn around soon',
-      'star box = answer an hku question, skip ahead (max 6)',
-      'station announcement = staff is coming. do not jump.',
-      "three hearts. lose all three and it's over.",
-      'reach the front before 8:55'
+    const rows = [
+      { icon: 'alert', label: 'alert doodle above head = they will turn around soon' },
+      { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
+      { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
+      { icon: 'hearts', label: "three hearts. lose all three and it's over." },
+      { icon: 'clock', label: 'reach the front before 8:55' }
     ];
-    for (let i = 0; i < lines.length; i++) {
-      SK.text(ctx, lines[i], 640, 200 + i * 60, 24, SK.ink);
+    for (let i = 0; i < rows.length; i++) {
+      const y = 190 + i * 74;
+      const iconX = 340;
+      const textX = 400;
+      if (rows[i].icon === 'alert') SK.alert(ctx, iconX, y);
+      if (rows[i].icon === 'star') SK.star(ctx, iconX, y, 18);
+      if (rows[i].icon === 'hearts') {
+        SK.heart(ctx, iconX - 30, y, 16);
+        SK.heart(ctx, iconX, y, 16);
+        SK.heart(ctx, iconX + 30, y, 16);
+      }
+      if (rows[i].icon === 'clock') {
+        SK.circle(ctx, iconX, y, 18, SK.ink, 2);
+        SK.line(ctx, iconX, y, iconX, y - 11, SK.ink, 2);
+        SK.line(ctx, iconX, y, iconX + 10, y, SK.ink, 2);
+      }
+      if (rows[i].icon === 'announce') {
+        SK.rect(ctx, iconX - 26, y - 12, 52, 24, SK.blue, 2.5);
+        SK.text(ctx, '!', iconX, y, 20, SK.blue);
+      }
+      SK.text(ctx, rows[i].label, textX, y, 24, SK.ink, 'left');
     }
   }
 
@@ -180,10 +197,13 @@ function renderGame(ctx) {
 
   if (G.combo >= 2) SK.text(ctx, G.combo + '/5', CONFIG.playerX, 430, 22, SK.gold);
 
+  // timer top-left
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
 
+  // position count — CENTER TOP, large
   SK.text(ctx, 'people ' + Math.max(0, G.total - G.passed), 640, 60, 42, SK.ink, 'center');
 
+  // hearts — TOP RIGHT
   for (let i = 0; i < CONFIG.hearts; i++) {
     SK.heart(ctx, 1120 + i * 60, 50, 30, i >= G.hearts);
   }
@@ -205,9 +225,7 @@ function renderGame(ctx) {
   }
 
   if (G.frozen && G.queue[0]) {
-    const bx = CONFIG.slotX[0], by = 420;
-    SK.rect(ctx, bx - 50, by - 24, 130, 48, SK.ink, 2);
-    SK.text(ctx, 'sorry!', bx + 15, by, 24);
+    SK.text(ctx, 'sorry!', CONFIG.slotX[0] + 15, 420, 32, SK.red);
     SK.text(ctx, 'got caught! back to position ' + (G.total - G.passed), 640, 200, 28, SK.red);
   }
 
@@ -288,7 +306,6 @@ function renderPause(ctx) {
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillRect(0, 0, 1280, 720);
 
-  SK.rect(ctx, 390, 220, 500, 280, SK.ink, 3);
   SK.text(ctx, 'paused', 640, 270, 44);
 
   SK.rect(ctx, 490, 310, 300, 60, SK.ink, 3);
@@ -317,11 +334,9 @@ function renderSuccess(ctx) {
   const x = 440, y = 450, w = 400, h = 150;
   SK.rect(ctx, x, y, w, h, SK.ink, 3);
   SK.circle(ctx, x + 40, y + 35, 14, SK.ink, 2);
-  SK.text(ctx, G.passed + ' people cut', x + 80, y + 35, 24, SK.ink, 'left');
-  SK.circle(ctx, x + 40, y + 75, 14, SK.ink, 2);
-  SK.text(ctx, 'arrived ' + G.winTime, x + 80, y + 75, 24, SK.ink, 'left');
-  SK.rect(ctx, x + 30, y + 105, 24, 30, SK.ink, 2);
-  SK.text(ctx, 'exit ' + (G.mode === 'easy' ? 'A1' : 'A2'), x + 80, y + 115, 24, SK.ink, 'left');
+  SK.text(ctx, 'arrived ' + G.winTime, x + 80, y + 35, 24, SK.ink, 'left');
+  SK.rect(ctx, x + 30, y + 75, 24, 30, SK.ink, 2);
+  SK.text(ctx, 'exit ' + (G.mode === 'easy' ? 'A1' : 'A2'), x + 80, y + 85, 24, SK.ink, 'left');
 
   btn(ctx, 540, 630, 200, 60, 'again', function() { G.screen = 'mode'; });
 }
