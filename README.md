@@ -48,4 +48,4 @@ THIS GAME IS FICTIONAL. PLEASE QUEUE PROPERLY IN REAL LIFE.
 
 ## acknowledgement
 
-- fonts: [gaegu](https://fonts.google.com/specimen/Gaegu) via google fonts
+fonts: [gaegu](https://fonts.google.com/specimen/Gaegu) via google fonts
