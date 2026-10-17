@@ -123,9 +123,9 @@ function renderTutorial(ctx) {
   } else {
     const rows = [
       { icon: 'alert', label: 'alert doodle above head = they will turn around soon' },
-      { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
-      { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
-      { icon: 'hearts', label: "three hearts. lose all three and it's over." },
+      { icon: 'star', label: 'star box = answer an hku question to skip ahead a bit (max 6)' },
+      { icon: 'announce', label: 'station announcement = staff is coming. do not jump' },
+      { icon: 'hearts', label: "three hearts. lose all three and it's over" },
       { icon: 'clock', label: 'reach the front before 8:55' }
     ];
     for (let i = 0; i < rows.length; i++) {
