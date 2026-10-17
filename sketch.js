@@ -125,6 +125,7 @@ const CH = {
     const headR = 20;
     const headY = y - 108;
     const isLooking = member.state === 'looking';
+    const isAngry = member.state === 'angry';
 
     if (member.type === 'staff') {
       SK.line(ctx, x, y - 44, x - 10, y);
@@ -191,13 +192,26 @@ const CH = {
       }
     }
 
-    if (!isLooking && member.type === 'dozing') {
+    // angry state — big glaring eye + fire on head
+    if (isAngry) {
+      SK.circle(ctx, x, headY - 3, 8, SK.red, 2.5);
+      SK.dot(ctx, x, headY - 3, 3, SK.ink);
+      SK.line(ctx, x - 12, headY - 14, x - 2, headY - 18, SK.red, 2.5, 0);
+      SK.line(ctx, x + 2, headY - 18, x + 12, headY - 14, SK.red, 2.5, 0);
+      const ft = performance.now() / 200;
+      SK.line(ctx, x - 10, headY - 22, x - 12, headY - 36 - Math.sin(ft) * 3, SK.red, 2.5, 0.6);
+      SK.line(ctx, x - 2, headY - 22, x - 2, headY - 46 - Math.sin(ft + 1) * 4, SK.red, 3, 0.6);
+      SK.line(ctx, x + 6, headY - 22, x + 8, headY - 40 - Math.sin(ft + 2) * 3, SK.red, 2.5, 0.6);
+      SK.line(ctx, x + 12, headY - 20, x + 14, headY - 32 - Math.sin(ft + 3) * 3, SK.red, 2, 0.6);
+    }
+
+    if (!isLooking && !isAngry && member.type === 'dozing') {
       SK.text(ctx, 'z', x + 24, headY - 18, 22);
       SK.text(ctx, 'z', x + 38, headY - 34, 28);
       SK.text(ctx, 'z', x + 54, headY - 52, 34);
     }
 
-    if (!isLooking && member.type === 'normal') {
+    if (!isLooking && !isAngry && member.type === 'normal') {
       SK.rect(ctx, x + 14, y - 68, 10, 14, SK.ink, 2);
     }
 
