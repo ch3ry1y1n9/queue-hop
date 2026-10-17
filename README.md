@@ -2,7 +2,7 @@
 
 > hku station · exit a. the lift queue. again.
 
-a white-background, hand-drawn sketch-style, single-button browser game about jumping the exit a lift queue before your 9:00 class.
+a single-button browser game about jumping the exit A lift queue before your 9:00 class.
 
 **[▶ play queue hop](https://ch3ry1y1n9.github.io/queue-hop/)**
 
