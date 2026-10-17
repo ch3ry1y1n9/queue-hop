@@ -47,8 +47,8 @@ function handleClick(lx, ly) {
 
 canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
-  const [lx, ly] = toLogical(e.clientX, e.clientY);
-  handleClick(lx, ly);
+  const pos = toLogical(e.clientX, e.clientY);
+  handleClick(pos[0], pos[1]);
 });
 
 window.addEventListener('keydown', (e) => {
@@ -62,12 +62,27 @@ let lastTs = performance.now();
 function loop(ts) {
   const dt = Math.min(0.05, (ts - lastTs) / 1000);
   lastTs = ts;
-  update(dt);
-  render(ctx);
+  try {
+    update(dt);
+    render(ctx);
+  } catch (err) {
+    console.error('render error:', err);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 1280, 720);
+    ctx.fillStyle = '#c97b6b';
+    ctx.font = '28px "Gaegu", cursive';
+    ctx.textAlign = 'center';
+    ctx.fillText('error — see console (f12)', 640, 360);
+  }
   requestAnimationFrame(loop);
 }
 
 loadBest();
 loadSound();
 resize();
-requestAnimationFrame(loop);
+
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => { requestAnimationFrame(loop); });
+} else {
+  requestAnimationFrame(loop);
+}
