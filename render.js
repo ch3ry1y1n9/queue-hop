@@ -87,6 +87,7 @@ function renderBriefing(ctx) {
   btn(ctx, 540, 530, 220, 70, 'how to play', function() {
     G.screen = 'tutorial';
     G.tutorialPage = 0;
+    G.tutorialReturn = 'briefing';
   });
   btn(ctx, 540, 620, 220, 60, 'start queuing', function() { G.screen = 'game'; });
 }
@@ -95,7 +96,7 @@ function renderBriefing(ctx) {
 
 function renderTutorial(ctx) {
   SK.text(ctx, 'how to play', 640, 80, 44);
-  SK.text(ctx, 'use space on desktop, or tap anywhere on your phone, to jump', 640, 130, 22);
+  SK.text(ctx, 'use space on desktop, or tap anywhere on your phone, to jump', 640, 140, 22);
 
   if (G.tutorialPage === 0) {
     const cards = [
@@ -123,13 +124,13 @@ function renderTutorial(ctx) {
   } else {
     const rows = [
       { icon: 'alert', label: 'alert doodle above head = they will turn around soon' },
-      { icon: 'star', label: 'star box = answer an hku question to skip ahead a bit (max 6)' },
-      { icon: 'announce', label: 'station announcement = staff is coming. do not jump' },
-      { icon: 'hearts', label: "three hearts. lose all three and it's over" },
+      { icon: 'star', label: 'star box = answer an hku question, skip ahead (max 6)' },
+      { icon: 'announce', label: 'station announcement = staff is coming. do not jump.' },
+      { icon: 'hearts', label: "three hearts. lose all three and it's over." },
       { icon: 'clock', label: 'reach the front before 8:55' }
     ];
     for (let i = 0; i < rows.length; i++) {
-      const y = 190 + i * 74;
+      const y = 230 + i * 74;
       const iconX = 340;
       const textX = 400;
       if (rows[i].icon === 'alert') SK.alert(ctx, iconX, y);
@@ -153,14 +154,20 @@ function renderTutorial(ctx) {
   }
 
   SK.text(ctx, 'skip', 100, 660, 28, SK.ink);
-  G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: function() { G.screen = 'game'; } });
+  G.buttons.push({ x: 70, y: 640, w: 100, h: 40, action: function() {
+    if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; }
+    else G.screen = 'game';
+  }});
 
   if (G.tutorialPage === 0) {
     SK.text(ctx, 'next', 1140, 660, 28, SK.ink);
     G.buttons.push({ x: 1120, y: 640, w: 100, h: 40, action: function() { G.tutorialPage = 1; } });
   } else {
     SK.text(ctx, 'got it', 1140, 660, 28, SK.ink);
-    G.buttons.push({ x: 1100, y: 640, w: 140, h: 40, action: function() { G.screen = 'briefing'; } });
+    G.buttons.push({ x: 1100, y: 640, w: 140, h: 40, action: function() {
+      if (G.tutorialReturn === 'pause') { G.paused = false; G.screen = 'game'; G.tutorialReturn = null; }
+      else G.screen = 'briefing';
+    }});
   }
 }
 
@@ -195,8 +202,6 @@ function renderGame(ctx) {
   }
   CH.player(ctx, px, py, G.playerState);
 
-  if (G.combo >= 2) SK.text(ctx, G.combo + '/5', CONFIG.playerX, 430, 22, SK.gold);
-
   // timer top-left
   SK.text(ctx, currentClockString(), 40, 50, 32, SK.ink, 'left');
 
@@ -214,8 +219,7 @@ function renderGame(ctx) {
   G.buttons.push({ x: 1200, y: 110, w: 60, h: 60, action: function() { G.paused = true; } });
 
   if (G.staffState === 'banner') {
-    SK.rect(ctx, 140, 90, 1000, 90, SK.blue, 3);
-    SK.text(ctx, 'lift traffic is very busy, please follow staff direction to queue in line', 640, 135, 22, SK.ink);
+    SK.text(ctx, 'lift traffic is very busy, please follow staff direction to queue in line', 640, 135, 30, SK.blue);
   }
 
   if (G.staffState === 'walking') {
@@ -225,8 +229,8 @@ function renderGame(ctx) {
   }
 
   if (G.frozen && G.queue[0]) {
-    SK.text(ctx, 'sorry!', CONFIG.slotX[0] + 15, 420, 32, SK.red);
-    SK.text(ctx, 'got caught! back to position ' + (G.total - G.passed), 640, 200, 28, SK.red);
+    SK.text(ctx, 'sorry!', px, py - 180, 46, SK.red);
+    SK.text(ctx, 'moved back to position ' + (G.total - G.passed), 640, 200, 32, SK.red);
   }
 
   if (G.trivia) renderTrivia(ctx);
@@ -265,7 +269,7 @@ function renderTrivia(ctx) {
 
   if (G.trivia.result) {
     if (G.trivia.result === 'correct') {
-      SK.text(ctx, 'correct!', x + w / 2, y + h - 80, 40, SK.gold);
+      SK.text(ctx, 'correct! moved forward ' + G.trivia.skipAmount + ' positions', x + w / 2, y + h - 80, 32, SK.gold);
     } else {
       SK.text(ctx, 'wrong!', x + w / 2, y + h - 80, 40, SK.red);
     }
@@ -303,10 +307,10 @@ function wrapText(ctx, text, cx, cy, maxW, size, color, align) {
 /* ---------------- PAUSE ---------------- */
 
 function renderPause(ctx) {
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = 'rgba(255,255,255,0.96)';
   ctx.fillRect(0, 0, 1280, 720);
 
-  SK.text(ctx, 'paused', 640, 270, 44);
+  SK.text(ctx, 'paused', 640, 250, 44);
 
   SK.rect(ctx, 490, 310, 300, 60, SK.ink, 3);
   SK.text(ctx, 'resume', 640, 340, 28);
@@ -314,11 +318,19 @@ function renderPause(ctx) {
 
   SK.rect(ctx, 490, 380, 300, 60, SK.ink, 3);
   SK.text(ctx, 'how to play', 640, 410, 28);
-  G.buttons.push({ x: 490, y: 380, w: 300, h: 60, action: function() { G.paused = false; G.screen = 'tutorial'; G.tutorialPage = 0; } });
+  G.buttons.push({ x: 490, y: 380, w: 300, h: 60, action: function() {
+    G.paused = false;
+    G.screen = 'tutorial';
+    G.tutorialPage = 0;
+    G.tutorialReturn = 'pause';
+  }});
 
   SK.rect(ctx, 490, 450, 300, 60, SK.ink, 3);
-  SK.text(ctx, 'go to landing page', 640, 480, 28);
-  G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() { G.paused = false; G.screen = 'title'; } });
+  SK.text(ctx, 'end and go to landing page', 640, 480, 26);
+  G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() {
+    G.paused = false;
+    G.screen = 'title';
+  }});
 }
 
 /* ---------------- SUCCESS ---------------- */
@@ -345,7 +357,7 @@ function renderSuccess(ctx) {
 
 function renderFail(ctx) {
   let icon = 'staff', headline = 'caught by station staff. start over.';
-  if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught... leave home earlier...'; }
+  if (G.failReason === 'hearts') { icon = 'heart'; headline = '3 times getting caught...'; }
   if (G.failReason === 'clock') { icon = 'clock'; headline = 'leave home earlier next time.'; }
 
   if (icon === 'heart') SK.heart(ctx, 640, 180, 48, true);
@@ -357,6 +369,6 @@ function renderFail(ctx) {
   if (icon === 'staff') CH.person(ctx, 640, 260, { state: 'away', type: 'staff' });
 
   SK.text(ctx, headline, 640, 350, 32);
-  btn(ctx, 540, 440, 200, 60, 'try again', function() { startGame(G.mode); });
-  btn(ctx, 540, 520, 200, 60, 'change mode', function() { G.screen = 'mode'; });
+  btn(ctx, 540, 440, 200, 60, 'queue again', function() { startGame(G.mode); });
+  btn(ctx, 540, 520, 200, 60, 'change to another queue', function() { G.screen = 'mode'; });
 }
