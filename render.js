@@ -373,11 +373,15 @@ function renderFail(ctx) {
   }
   if (icon === 'staff') CH.person(ctx, 640, 260, { state: 'away', type: 'staff' });
 
-  SK.text(ctx, headline, 640, 350, 32);
+  let headlineColor = SK.ink;
+  if (G.failReason === 'hearts') headlineColor = SK.red;
+  SK.text(ctx, headline, 640, 350, 32, headlineColor);
 
   SK.text(ctx, 'queue again', 640, 440, 30, SK.ink);
+  SK.line(ctx, 545, 458, 735, 458, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 410, w: 300, h: 60, action: function() { startGame(G.mode); } });
 
   SK.text(ctx, 'change to another queue', 640, 510, 30, SK.ink);
+  SK.line(ctx, 480, 528, 800, 528, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 480, w: 300, h: 60, action: function() { G.screen = 'mode'; } });
 }
