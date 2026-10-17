@@ -1,6 +1,6 @@
 # queue hop
 
-> hku station · exit a. the lift queue. again.
+> hku station · exit A. the lift queue. again.
 
 a single-button browser game about jumping the exit A lift queue before your 9:00 class.
 
@@ -35,8 +35,8 @@ you have **3 hearts**. lose all three and it's game over. if the clock hits 8:55
 
 ## modes
 
-- **easy — exit a1 line** — ~65 people ahead, more dozers and distracted people
-- **hard — exit a2 line** — ~100 people ahead, more paranoid people and more staff patrols
+- **easy — exit A1 line** — ~65 people ahead, more dozers and distracted people
+- **hard — exit A2 line** — ~100 people ahead, more paranoid people and more staff patrols
 
 ---
 
