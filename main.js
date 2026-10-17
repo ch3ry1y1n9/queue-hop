@@ -60,4 +60,21 @@ let lastTs = performance.now();
 function loop(ts) {
   const dt = Math.min(0.05, (ts - lastTs) / 1000);
   lastTs = ts;
-  try
+  try {
+    update(dt);
+    render(ctx);
+  } catch (err) {
+    console.error('render error:', err);
+  }
+  requestAnimationFrame(loop);
+}
+
+loadBest();
+loadSound();
+resize();
+
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => { requestAnimationFrame(loop); });
+} else {
+  requestAnimationFrame(loop);
+}
