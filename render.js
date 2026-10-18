@@ -206,7 +206,10 @@ function drawLift(ctx) {
 function renderGame(ctx) {
   SK.line(ctx, 0, 560, 1280, 560, SK.ink, 2, 0.8);
 
-  drawLift(ctx);
+  const remaining = G.total - G.passed;
+  if (remaining <= 10) {
+    drawLift(ctx);
+  }
 
   for (let i = 0; i < G.passedQueue.length; i++) {
     const m = G.passedQueue[i];
