@@ -191,8 +191,8 @@ function drawLift(ctx) {
   SK.line(ctx, lx + 52, ly + 115, lx + 52, ly + 130, SK.ink, 2.5, 0);
 
   // floor indicator above door
-  SK.rect(ctx, lx + 20, ly - 28, 50, 22, SK.ink, 2);
-  SK.text(ctx, 'A', lx + 45, ly - 17, 16, SK.ink);
+  SK.rect(ctx, lx + 15, ly - 28, 60, 22, SK.ink, 2);
+  SK.text(ctx, G.mode === 'easy' ? 'A1' : 'A2', lx + 45, ly - 17, 16, SK.ink);
 
   // opening direction arrows on both sides of frame
   SK.line(ctx, lx - 15, ly + 60, lx - 5, ly + 60, SK.ink, 2, 0.3);
@@ -209,6 +209,9 @@ function renderGame(ctx) {
   const remaining = G.total - G.passed;
   if (remaining <= 10) {
     drawLift(ctx);
+    SK.text(ctx, 'lift: on (' + remaining + ')', 640, 680, 20, SK.red);
+  } else {
+    SK.text(ctx, 'lift: off (' + remaining + ')', 640, 680, 20, SK.grey);
   }
 
   for (let i = 0; i < G.passedQueue.length; i++) {
