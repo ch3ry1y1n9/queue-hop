@@ -36,10 +36,10 @@ function renderTitle(ctx) {
   SK.text(ctx, 'class check-in is at 9:00 sharp.', 640, 380, 28);
   SK.text(ctx, 'jump the queue when people are not looking.', 640, 420, 28);
 
-  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 680, 18);
-  SK.text(ctx, 'fonts from https://fonts.google.com/specimen/Gaegu', 640, 704, 14, SK.grey);
+  SK.text(ctx, 'this game is fictional. please queue properly in real life.', 640, 690, 18);
+  SK.text(ctx, 'fonts from https://fonts.google.com/specimen/Gaegu', 1240, 30, 14, SK.grey);
 
-  SK.text(ctx, 'start', 640, 625, 32);
+  SK.text(ctx, 'start', 640, 615, 32);
   SK.line(ctx, 580, 650, 700, 650, SK.ink, 2, 0.6);
   G.buttons.push({
     x: 540, y: 590, w: 200, h: 70,
