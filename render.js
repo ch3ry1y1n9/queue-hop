@@ -209,9 +209,6 @@ function renderGame(ctx) {
   const remaining = G.total - G.passed;
   if (remaining <= 10) {
     drawLift(ctx);
-    SK.text(ctx, 'lift: on (' + remaining + ')', 640, 680, 20, SK.red);
-  } else {
-    SK.text(ctx, 'lift: off (' + remaining + ')', 640, 680, 20, SK.grey);
   }
 
   for (let i = 0; i < G.passedQueue.length; i++) {
