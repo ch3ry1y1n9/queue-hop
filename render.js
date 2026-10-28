@@ -359,7 +359,7 @@ function renderPause(ctx) {
     G.tutorialReturn = 'pause';
   }});
 
-  SK.text(ctx, 'end and go to landing page', 640, 480, 28, SK.ink);
+  SK.text(ctx, 'back to landing page', 640, 480, 28, SK.ink);
   SK.line(ctx, 480, 498, 800, 498, SK.ink, 2, 0.6);
   G.buttons.push({ x: 490, y: 450, w: 300, h: 60, action: function() {
     G.paused = false;
