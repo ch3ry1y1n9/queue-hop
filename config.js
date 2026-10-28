@@ -46,7 +46,7 @@ const TRIVIA = [
   { q: 'what is the short form for Kadoorie Biological Sciences Building?', opts: ['KBSB', 'KBB', 'KBS'], a: 0 },
   { q: 'where is University Health Service?', opts: ['Meng Wah Complex', 'Chong Yuet Ming Amenities Centre', 'Fong Shu Chuen Amenities Centre'], a: 0 },
   { q: 'where is parknshop?', opts: ['Meng Wah Complex', 'Chong Yuet Ming Amenities Centre', 'Fong Shu Chuen Amenities Centre'], a: 1 },
-  { q: 'correct name for the Hku Law Library?', opts: ['Lui Che Woo Law Library', "Isn't it just Law Library?", 'Tin Ka Ping Education Library'], a: 0 },
+  { q: 'correct name for the HKU Law Library?', opts: ['Lui Che Woo Law Library', "Isn't it just Law Library?", 'Tin Ka Ping Education Library'], a: 0 },
   { q: "which bus line doesn't stop at HKU West Gate?", opts: ['103', '7', '971'], a: 2 },
   { q: 'which hall is not on main campus?', opts: ['Swire Hall', 'Simon K.Y. Lee Hall', 'Starr Hall'], a: 2 },
 ];
